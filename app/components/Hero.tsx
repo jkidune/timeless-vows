@@ -97,7 +97,7 @@ export default function Hero() {
           >
             {/* Primary Button */}
             <Link 
-              href="https://wa.me/255XXXXXXXXX" 
+              href="/contact" 
               className="box-border flex flex-row justify-center items-center px-5 py-2 w-full sm:flex-1 h-[48px] bg-[#8E6C4A] border border-[#8E6C4A] rounded-[1px] hover:bg-[#7A5A38] focus:outline-none focus:ring-2 focus:ring-[#D7B980] focus:ring-offset-2 transition-all duration-300"
             >
               <span className="font-['Manrope',sans-serif] font-medium text-[16px] leading-[22px] text-center tracking-[-0.02em] text-[#F7F3EE] w-[133px]">
@@ -107,7 +107,7 @@ export default function Hero() {
 
             {/* Secondary Button */}
             <Link 
-              href="/demo" 
+              href="/invitation/demo" 
               className="box-border flex flex-row justify-center items-center px-5 py-2 w-full sm:flex-1 h-[48px] bg-transparent border border-[#8E6C4A] rounded-[1px] hover:bg-[#8E6C4A]/10 focus:outline-none focus:ring-2 focus:ring-[#D7B980] focus:ring-offset-2 transition-all duration-300 backdrop-blur-sm"
             >
               <span className="font-['Manrope',sans-serif] font-medium text-[16px] leading-[22px] text-center tracking-[-0.02em] text-[#D4CCBD]">

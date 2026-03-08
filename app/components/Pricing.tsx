@@ -94,7 +94,7 @@ export default function Pricing() {
           {/* CTA Button */}
           <motion.div variants={itemVariants} className="w-full md:w-auto">
             <Link 
-              href="https://wa.me/255XXXXXXXXX" 
+              href="/contact" 
               className="inline-flex flex-row justify-center items-center px-[20px] py-[12px] bg-[#8E6C4A] border border-[#8E6C4A] rounded-[1px] hover:bg-[#7A5A38] transition-colors duration-300 whitespace-nowrap"
             >
               <span className="font-['Manrope',sans-serif] font-medium text-[16px] leading-[22px] text-center tracking-[-0.02em] text-[#F7F3EE]">
@@ -168,7 +168,7 @@ export default function Pricing() {
               {/* Mobile CTA */}
               <div className="mt-auto pt-8 md:hidden">
                 <Link 
-                  href="https://wa.me/255XXXXXXXXX" 
+                  href="/contact" 
                   className={`flex justify-center items-center py-[10px] w-full border rounded-[1px] transition-colors ${
                     plan.isPopular 
                       ? "bg-[#8E6C4A] border-[#8E6C4A] text-[#F7F3EE]" 
@@ -185,7 +185,7 @@ export default function Pricing() {
               {plan.isPopular && (
                 <div className="mt-6 hidden md:block">
                   <Link 
-                    href="https://wa.me/255XXXXXXXXX" 
+                    href="/contact" 
                     className="flex justify-center items-center py-[12px] px-[24px] w-full bg-[#8E6C4A] border border-[#8E6C4A] rounded-[1px] hover:bg-[#7A5A38] transition-colors duration-300"
                   >
                     <span className="font-['Manrope',sans-serif] font-medium text-[16px] leading-[22px] tracking-[-0.02em] text-[#F7F3EE]">

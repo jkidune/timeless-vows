@@ -98,6 +98,10 @@ export default function InvitationPage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [scratchedCount, setScratchedCount] = useState(0);
 
+  // ── Music State ──
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
   useEffect(() => {
     if (scratchedCount === 3) {
       const duration = 3 * 1000;
@@ -137,6 +141,19 @@ export default function InvitationPage() {
     if (phase !== "idle") return;
     setPhase("opening");
     setTimeout(() => { setPhase("open"); setOpened(true); }, 1800);
+
+    // Play music seamlessly on interaction
+    if (audioRef.current) {
+      audioRef.current.volume = 0.6; // Soft volume
+      audioRef.current.play().catch(e => console.log("Audio play blocked by browser:", e));
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
   };
 
   const copyToClipboard = (text: string, key: string) => {
@@ -152,8 +169,13 @@ export default function InvitationPage() {
   };
 
   return (
-    <div style ={{ fontFamily: "'Manrope', sans-serif", background: "#0e0c0a", minHeight: "100vh", overflowX: "hidden" }}>
-      <style>{`
+    <div style={{ fontFamily: "'Manrope', sans-serif", background: "#0e0c0a", minHeight: "100vh", overflowX: "hidden" }}>
+      
+      {/* ── Background Audio Element ── */}
+      <audio ref={audioRef} src="/wedding-song.mp3" loop />
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
@@ -207,7 +229,31 @@ export default function InvitationPage() {
         }
         .rsvp-input:focus { border-color: #8E6C4A; }
         .rsvp-label { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #8E6C4A; text-transform: uppercase; margin-bottom: 8px; display: block; }
-      `}</style>
+      `
+      }} />
+
+      {/* ═══════════════════════════════════════════════════════════
+          FLOATING MUSIC CONTROL (Visible when opened)
+      ════════════════════════════════════════════════════════════ */}
+      {phase !== "idle" && (
+        <button 
+          onClick={toggleMute}
+          style={{ 
+            position: "fixed", bottom: 24, right: 24, zIndex: 9000, 
+            background: "rgba(35,31,32,0.6)", backdropFilter: "blur(8px)", 
+            border: "1px solid rgba(201,169,110,0.3)", borderRadius: "50%", 
+            width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", 
+            color: "#C9A96E", cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            transition: "all 0.3s ease", animation: "fadeUp 1s ease 2s both"
+          }}
+        >
+          {isMuted ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          )}
+        </button>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════
           CURTAIN OVERLAY (Only visible initially)
@@ -226,7 +272,7 @@ export default function InvitationPage() {
       </div>
 
       {phase === "idle" && (
-        <div onClick={handleOpen} style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10001, cursor: "pointer", textAlign: "center" }}>
+        <div onClick={handleOpen} style={{ position: "fixed", top: "70%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10001, cursor: "pointer", textAlign: "center" }}>
           <div style={{ position: "relative", width: 72, height: 72, margin: "0 auto 16px" }}>
             <div className="ripple-ring" /><div className="ripple-ring" />
             <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(30, 22, 14, 0.7)", border: "1.5px solid rgba(199,161,94,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }}>

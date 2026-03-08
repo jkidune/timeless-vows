@@ -87,12 +87,11 @@ export default function CTA() {
         {/* CTA Button */}
         <motion.div variants={itemVariants}>
           <Link 
-            href="https://wa.me/255XXXXXXXXX" 
+            href="/contact" 
             className="group inline-flex flex-row justify-center items-center px-[32px] py-[16px] bg-[#8E6C4A] border border-[#8E6C4A] rounded-[2px] hover:bg-[#7A5A38] transition-all duration-300 shadow-xl hover:shadow-[0_10px_40px_-10px_rgba(142,108,74,0.5)]"
           >
-            <MessageCircle className="w-5 h-5 text-[#F7F3EE] mr-3 group-hover:scale-110 transition-transform duration-300" />
             <span className="font-['Manrope',sans-serif] font-medium text-[18px] leading-[25px] tracking-[-0.02em] text-[#F7F3EE]">
-              Get Started on WhatsApp
+              Request Invitation
             </span>
           </Link>
         </motion.div>

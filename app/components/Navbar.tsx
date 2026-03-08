@@ -99,7 +99,7 @@ export default function Navbar() {
               
               {/* CTA Button inside Pill */}
               <Link
-                href="https://wa.me/255XXXXXXXXX"
+                href="/contact"
                 className="relative flex flex-col items-center justify-center px-6 py-2 ml-1 rounded-full border border-[#8E6C4A] hover:bg-[#8E6C4A]/10 transition-colors"
               >
                 <span className="font-['Manrope',sans-serif] font-bold text-[11px] leading-[15px] tracking-[0.15em] uppercase text-[#D7B980]">
@@ -147,11 +147,11 @@ export default function Navbar() {
               ))}
               <div className="w-12 h-px bg-[#8E6C4A]/50 my-4" />
               <Link
-                href="https://wa.me/255XXXXXXXXX"
+                href="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-8 py-4 bg-[#8E6C4A] text-[#F7F3EE] rounded-[1px] font-['Manrope',sans-serif] font-medium text-[16px] tracking-wide"
               >
-                Contact Us on WhatsApp
+                Request Invitation
               </Link>
             </div>
           </motion.div>
