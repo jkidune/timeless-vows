@@ -34,7 +34,7 @@ export default function Hero() {
         initial={{ opacity: 0, x: -40, rotate: 0 }}
         animate={{ opacity: 1, x: 0, rotate: -10.93 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="hidden xl:block absolute w-[305px] h-[342px] left-[60px] top-[147px] rounded-[5px] bg-[#383838] overflow-hidden shadow-2xl z-0"
+        className="hidden xl:block absolute w-[305px] h-[342px] left-[60px] top-[147px] rounded-[5px] overflow-hidden shadow-2xl z-0"
       >
         <Image 
           src="/camera.png" 
@@ -50,7 +50,7 @@ export default function Hero() {
         initial={{ opacity: 0, x: 40, rotate: 0 }}
         animate={{ opacity: 1, x: 0, rotate: 17.82 }}
         transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-        className="hidden xl:block absolute w-[305px] h-[342px] right-[60px] top-[270px] rounded-[5px] bg-[#383838] overflow-hidden shadow-2xl z-0"
+        className="hidden xl:block absolute w-[305px] h-[342px] right-[60px] top-[270px] rounded-[5px] overflow-hidden shadow-2xl z-0"
       >
         <Image 
           src="/rings.png" 

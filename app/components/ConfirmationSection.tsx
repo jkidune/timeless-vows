@@ -68,7 +68,7 @@ export default function ConfirmationSection() {
             </motion.div>
 
             {/* Title */}
-            <motion.h2 variants={itemVariants} className="font-['Cormorant_Garamond',serif] font-light text-[36px] md:text-[48px] leading-[1.1] tracking-[-0.02em] text-[#231F20] max-w-[376px]">
+            <motion.h2 variants={itemVariants} className="font-['Cormorant_Garamond',serif] font-light text-[36px] md:text-[48px] leading-[1.1] tracking-[-0.02em] text-[#231F20] whitespace-nowrap">
               A card they’ll actually keep.
             </motion.h2>
           </div>
@@ -96,7 +96,7 @@ export default function ConfirmationSection() {
                 <h3 className="font-['Instrument_Serif',serif] italic text-[24px] md:text-[32px] leading-[1.2] text-[#231F20]">
                   The Pending Card
                 </h3>
-                <p className="font-['Manrope',sans-serif] font-medium text-[14px] leading-[19px] text-[#303235] max-w-[484px]">
+                <p className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] tracking-[-0.02em] text-[#303235] max-w-[484px]">
                   The moment a guest submits their RSVP, they receive a personalised card addressed to them by name. It shows your wedding details and an amber status badge marking their attendance as pending. It arrives instantly. No waiting. No follow-up needed.
                 </p>
               </motion.div>
@@ -150,7 +150,7 @@ export default function ConfirmationSection() {
                 <h3 className="font-['Instrument_Serif',serif] italic text-[24px] md:text-[32px] leading-[1.2] text-[#231F20]">
                   The Confirmed Card
                 </h3>
-                <p className="font-['Manrope',sans-serif] font-medium text-[14px] leading-[19px] text-[#303235] max-w-[484px]">
+                <p className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] tracking-[-0.02em] text-[#303235] max-w-[484px]">
                   Once your planner verifies a guest — whether they've received a contribution or simply confirmed attendance — the card upgrades. The amber badge becomes a green Confirmed badge. Same elegant design. One meaningful change. Your guest can download it as an image or PDF and share it. It becomes their official entry card for your day.
                 </p>
               </motion.div>

@@ -6,6 +6,8 @@ import WeddingPlanners from "./components/WeddingPlanners";
 import WhatsIncluded from "./components/WhatsIncluded";
 import ConfirmationSection from "./components/ConfirmationSection";
 import Comparison from "./components/Comparison";
+import FAQ from "./components/FAQ";
+import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 // import WhatsIncluded from "./components/WhatsIncluded"; // We will build this next!
 
@@ -41,7 +43,8 @@ export default function Home() {
       <div id="planners">
         <WeddingPlanners />
       </div>
-      
+      <div id="faq"><FAQ /></div>
+      <CTA />
       <Footer />
     </main>
   );
