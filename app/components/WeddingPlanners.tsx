@@ -1,44 +1,5 @@
 import { BadgeCheck, DollarSign, Handshake, LayoutDashboard, MessageCircle } from 'lucide-react';
 
-const planners = [
-  {
-    id: '01',
-    title: 'White-label or co-branding',
-    description: 'Your brand on every invitation. Offer it as an exclusive premium service or in collaboration with us.',
-    icon: <BadgeCheck className="w-8 h-8" />,
-  },
-  {
-    id: '02',
-    title: 'Fixed price per wedding',
-    description: 'No surprises. Special rates for professionals that let you include it in your budget with guaranteed margin.',
-    icon: <DollarSign className="w-8 h-8" />,
-  },
-  {
-    id: '03',
-    title: 'Direct & priority support',
-    description: 'Direct communication with our team. Quick responses so you never keep your couples waiting.',
-    icon: <MessageCircle className="w-8 h-8" />,
-  },
-  {
-    id: '04',
-    title: 'Surprise your couples',
-    description: 'Stand out from the competition by offering something unique. Your couples will remember it forever.',
-    icon: <Handshake className="w-8 h-8" />,
-  },
-  {
-    id: '05',
-    title: 'Build client loyalty',
-    description: 'A premium touch that will make them recommend you. First impressions matter, and the invitation is where it all begins.',
-    icon: <LayoutDashboard className="w-8 h-8" />,
-  },
-  {
-    id: '06',
-    title: 'Expand your services',
-    description: 'Offer an additional service with no extra effort. We handle everything, you take the credit.',
-    icon: <LayoutDashboard className="w-8 h-8" />,
-  }
-];
-
 // Note: The user provided specific text for 5 items, but the reference image shows 6 cards.
 // I will map the user's text to the cards where possible, but use the reference image layout.
 // Let's re-read the user prompt carefully.
