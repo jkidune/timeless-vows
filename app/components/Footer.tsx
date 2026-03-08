@@ -38,7 +38,7 @@ export default function Footer() {
               <nav className="flex flex-col gap-3">
                 <Link href="/" className="font-['Manrope',sans-serif] font-medium text-[16px] text-[#8E6C4A] hover:text-[#D7B980] transition-colors">Home</Link>
                 <Link href="#problem-statement" className="font-['Manrope',sans-serif] font-medium text-[16px] text-[#8E6C4A] hover:text-[#D7B980] transition-colors">About Us</Link>
-                <Link href="/demo" className="font-['Manrope',sans-serif] font-medium text-[16px] text-[#8E6C4A] hover:text-[#D7B980] transition-colors">Demo</Link>
+                <Link href="/invitation/demo" className="font-['Manrope',sans-serif] font-medium text-[16px] text-[#8E6C4A] hover:text-[#D7B980] transition-colors">Demo</Link>
                 <Link href="https://wa.me/255XXXXXXXXX" className="font-['Manrope',sans-serif] font-medium text-[16px] text-[#8E6C4A] hover:text-[#D7B980] transition-colors">Contact us</Link>
               </nav>
             </div>
