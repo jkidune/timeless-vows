@@ -48,7 +48,7 @@ export default function ConfirmationSection() {
   };
 
   return (
-    <section className="w-full bg-[#F6F2EE] py-[100px] flex justify-center overflow-hidden">
+    <section className="w-full bg-[#F6F2EE] py-[60px] md:py-[100px] flex justify-center overflow-hidden">
       <div className="max-w-[1280px] w-full px-6 flex flex-col items-center gap-[41px]">
         
         {/* ── Header Wrapper ── */}
@@ -68,7 +68,7 @@ export default function ConfirmationSection() {
             </motion.div>
 
             {/* Title */}
-            <motion.h2 variants={itemVariants} className="font-['Cormorant_Garamond',serif] font-light text-[36px] md:text-[48px] leading-[1.1] tracking-[-0.02em] text-[#231F20] whitespace-nowrap">
+            <motion.h2 variants={itemVariants} className="font-['Cormorant_Garamond',serif] font-light text-[36px] md:text-[48px] leading-[1.1] tracking-[-0.02em] text-[#231F20] whitespace-normal md:whitespace-nowrap">
               A card they’ll actually keep.
             </motion.h2>
           </div>

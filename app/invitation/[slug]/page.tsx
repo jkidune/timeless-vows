@@ -152,7 +152,7 @@ export default function InvitationPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'Manrope', sans-serif", background: "#0e0c0a", minHeight: "100vh", overflowX: "hidden" }}>
+    <div style ={{ fontFamily: "'Manrope', sans-serif", background: "#0e0c0a", minHeight: "100vh", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }

@@ -183,7 +183,7 @@ export default function Pricing() {
 
               {/* Add CTA Button for Standard Card */}
               {plan.isPopular && (
-                <div className="mt-6">
+                <div className="mt-6 hidden md:block">
                   <Link 
                     href="https://wa.me/255XXXXXXXXX" 
                     className="flex justify-center items-center py-[12px] px-[24px] w-full bg-[#8E6C4A] border border-[#8E6C4A] rounded-[1px] hover:bg-[#7A5A38] transition-colors duration-300"

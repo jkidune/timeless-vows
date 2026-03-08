@@ -19,6 +19,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace("#", "");
+    const elem = document.getElementById(targetId);
+    if (elem) {
+      elem.scrollIntoView({ behavior: "smooth" });
+      setActiveTab(href === "#how-it-works" ? "How It Works" : 
+                   href === "#features" ? "Features" : 
+                   href === "#pricing" ? "Pricing" : 
+                   href === "#planners" ? "For Planners" : "");
+    }
+  };
+
   const navItems = [
     { name: "How It Works", href: "#how-it-works" },
     { name: "Features", href: "#features" },
@@ -29,7 +42,11 @@ export default function Navbar() {
   return (
     <>
       {/* ── Desktop & Mobile Header ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-6 pt-6 pb-4 pointer-events-none">
+      <header 
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-center px-6 pt-6 pb-4 transition-colors duration-300 ${
+          scrolled ? "bg-[#231F20] lg:bg-transparent shadow-md lg:shadow-none pointer-events-auto lg:pointer-events-none" : "bg-transparent pointer-events-none"
+        }`}
+      >
         <div className="flex flex-row items-center justify-between w-full max-w-[1280px] pointer-events-auto">
           
           {/* 1. Logo (Left) */}
@@ -56,7 +73,7 @@ export default function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => setActiveTab(item.name)}
+                  onClick={(e) => handleScrollTo(e, item.href)}
                   className="relative flex flex-col items-center justify-center px-5 py-2 rounded-full group"
                 >
                   {/* Active Pill Background */}
