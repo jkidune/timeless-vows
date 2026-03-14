@@ -1,17 +1,37 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import { Cormorant_Garamond, Jost } from "next/font/google";
+import localFont from "next/font/local";
+import { ConditionalNavbar } from "./components/Conditionalnavbar";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
 });
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+});
+
+const jost = Jost({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-jost",
+});
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const kapakana = localFont({
+  src: "../public/fonts/Kapakana-VariableFont_wght.woff2",
+  variable: "--font-kapakana",
   display: "swap",
 });
 
@@ -35,9 +55,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${inter.variable} antialiased font-sans`}
+        className={`${playfair.variable} ${inter.variable} ${cormorant.variable} ${jost.variable} ${kapakana.variable} antialiased font-sans`}
       >
-        <Navbar />
+        <ConditionalNavbar />
         {children}
       </body>
     </html>

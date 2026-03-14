@@ -82,7 +82,7 @@ export default function WeddingPlanners() {
           </motion.h2>
 
           <motion.p variants={itemVariants} className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] text-[#D4CCBD]">
-            Offer your couples something they've never seen from any other planner in Tanzania. 
+            Offer your couples something they&apos;ve never seen from any other planner in Tanzania. 
             Partner with Timeless Vows and make a premium digital invitation part of every package you sell.
           </motion.p>
         </motion.div>
@@ -113,7 +113,7 @@ export default function WeddingPlanners() {
             className="group inline-flex flex-row justify-center items-center px-[28px] py-[16px] bg-[#8E6C4A] border border-[#8E6C4A] rounded-[2px] hover:bg-[#7A5A38] transition-all duration-300 shadow-lg hover:shadow-[0_10px_30px_-10px_rgba(142,108,74,0.4)]"
           >
             <span className="font-['Manrope',sans-serif] font-medium text-[16px] leading-[22px] tracking-[-0.01em] text-[#F7F3EE]">
-              Let's Work Together
+              Let&apos;s Work Together
             </span>
           </Link>
         </motion.div>

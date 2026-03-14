@@ -63,7 +63,7 @@ export default function ProblemStatement() {
             </h2>
             
             <p className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] text-[#303235] max-w-[484px]">
-              Your wedding deserves more than a screenshot. Most couples in Tanzania spend days designing an invitation in Canva, then chase confirmations manually over calls, texts, and spreadsheets — with no clear picture of who's actually coming.
+              Your wedding deserves more than a screenshot. Most couples in Tanzania spend days designing an invitation in Canva, then chase confirmations manually over calls, texts, and spreadsheets — with no clear picture of who&apos;s actually coming.
             </p>
           </div>
 

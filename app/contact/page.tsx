@@ -212,12 +212,12 @@ export default function ContactPage() {
               Begin Your Story
             </div>
             <h1 className="fade-up" style={{ animationDelay: "0.35s", fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, fontSize: "clamp(36px, 3.5vw, 52px)", color: "#D4CCBD", lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 28 }}>
-              Let's create something<br />
+              Let&apos;s create something<br />
               <em style={{ color: "#C9A96E", fontStyle: "italic" }}>truly unforgettable.</em>
             </h1>
             <div className="fade-up gold-line" style={{ animationDelay: "0.5s", height: 1, width: 64, marginBottom: 28 }} />
             <p className="fade-up" style={{ animationDelay: "0.6s", fontSize: 14, color: "#D4CCBD", opacity: 0.65, lineHeight: 1.85, marginBottom: 40, maxWidth: 360 }}>
-              Tell us about your day and we'll be in touch within a few hours — usually on WhatsApp. Most invitations are ready within 48 hours of approval.
+              Tell us about your day and we&apos;ll be in touch within a few hours — usually on WhatsApp. Most invitations are ready within 48 hours of approval.
             </p>
 
             <div className="fade-up" style={{ animationDelay: "0.75s" }}>
@@ -509,7 +509,7 @@ function SuccessState({ name, whatsappMsg }: { name: string, whatsappMsg: string
         Asante, {name.split(" ")[0]}!
       </div>
       <div style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.8, maxWidth: 380, marginBottom: 32, animation: "fadeUp 0.6s ease 0.5s both", opacity: 0 }}>
-        We've received your enquiry and will be in touch on WhatsApp within a few hours. We can't wait to start building your invitation.
+        We&apos;ve received your enquiry and will be in touch on WhatsApp within a few hours. We can&apos;t wait to start building your invitation.
       </div>
     </div>
   );

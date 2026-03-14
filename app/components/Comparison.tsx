@@ -60,7 +60,7 @@ export default function Comparison() {
             transition={{ delay: 0.2 }}
             className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] text-[#303235] max-w-[601px]"
           >
-            You can. Hundreds of couples do. But here's what that actually costs you — in time, in stress, and in the experience you give your guests.
+            You can. Hundreds of couples do. But here&apos;s what that actually costs you — in time, in stress, and in the experience you give your guests.
           </motion.p>
         </div>
 

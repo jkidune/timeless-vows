@@ -82,7 +82,7 @@ export default function HowItWorks() {
           </motion.h2>
 
           <motion.p variants={cardVariants} className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] text-[#303235] max-w-[600px]">
-            You contact us. We build it. You review it. You share it. That's the whole process.
+            You contact us. We build it. You review it. You share it. That&apos;s the whole process.
           </motion.p>
         </motion.div>
 

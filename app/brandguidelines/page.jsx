@@ -292,7 +292,7 @@ export default function BrandGuidelines() {
               </div>
               <div style={{ background: "#F6F2EE", padding: 32, borderRadius: 8, border: "1px solid #EAEDF0" }}>
                 <div style={{ fontSize: 11, letterSpacing: "0.13em", color: "#8E6C4A", fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>LIGHT SECTION</div>
-                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 300, color: "#231F20", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 12 }}>A card they'll<br/>actually keep.</div>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 300, color: "#231F20", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 12 }}>A card they&apos;ll<br/>actually keep.</div>
                 <div style={{ fontSize: 14, color: "#303235", lineHeight: 1.6, marginBottom: 20 }}>Every guest receives a personalised digital card the moment they RSVP — with their name, your wedding details.</div>
                 <div style={{ background: "#8E6C4A", color: "#F7F3EE", padding: "8px 20px", fontSize: 14, fontWeight: 500, borderRadius: 1, display: "inline-block", letterSpacing: "-0.02em" }}>Get Your Invitation</div>
               </div>
@@ -675,7 +675,7 @@ export default function BrandGuidelines() {
                 ))}
               </div>
               <div>
-                <h3 style={{ fontSize: 11, letterSpacing: "0.15em", fontWeight: 600, color: "#dc2626", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>❌ Don't</h3>
+                <h3 style={{ fontSize: 11, letterSpacing: "0.15em", fontWeight: 600, color: "#dc2626", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>❌ Don&apos;t</h3>
                 {[
                   "Never use Inter as body font in the product UI — it's only in the Figma footer",
                   "Never use border-radius > 5px — this brand is architectural, not bubbly",

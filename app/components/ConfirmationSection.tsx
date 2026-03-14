@@ -102,7 +102,7 @@ export default function ConfirmationSection() {
               </motion.div>
               
               <motion.p variants={itemVariants} className="font-['Manrope',sans-serif] font-normal text-[12px] leading-[16px] tracking-[-0.02em] text-[#8E6C4A] mt-6 md:mt-0">
-                Delivered immediately after RSVP · Guest's name on every card
+                Delivered immediately after RSVP · Guest&apos;s name on every card
               </motion.p>
             </div>
 
@@ -151,12 +151,12 @@ export default function ConfirmationSection() {
                   The Confirmed Card
                 </h3>
                 <p className="font-['Manrope',sans-serif] font-normal text-[16px] leading-[22px] tracking-[-0.02em] text-[#303235] max-w-[484px]">
-                  Once your planner verifies a guest — whether they've received a contribution or simply confirmed attendance — the card upgrades. The amber badge becomes a green Confirmed badge. Same elegant design. One meaningful change. Your guest can download it as an image or PDF and share it. It becomes their official entry card for your day.
+                  Once your planner verifies a guest — whether they&apos;ve received a contribution or simply confirmed attendance — the card upgrades. The amber badge becomes a green Confirmed badge. Same elegant design. One meaningful change. Your guest can download it as an image or PDF and share it. It becomes their official entry card for your day.
                 </p>
               </motion.div>
               
               <motion.p variants={itemVariants} className="font-['Manrope',sans-serif] font-normal text-[12px] leading-[16px] tracking-[-0.02em] text-[#8E6C4A] mt-6 md:mt-0">
-                Triggered by your planner · Green "Confirmed ✓" badge · Downloadable as PNG or PDF
+                Triggered by your planner · Green &quot;Confirmed ✓&quot; badge · Downloadable as PNG or PDF
               </motion.p>
             </div>
           </motion.div>
