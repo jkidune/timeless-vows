@@ -1,0 +1,189 @@
+// FILE PATH: prisma/schema.prisma
+// Run after setup:
+//   npx prisma generate
+//   npx prisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN    // Timeless Vows staff
+  PLANNER  // Wedding planner managing multiple couples
+  COUPLE   // The couple themselves
+}
+
+enum InvitationStatus {
+  DRAFT      // Being set up, not yet visible
+  ACTIVE     // Live and accessible
+  EXPIRED    // Past wedding date
+  SUSPENDED  // Paused by admin
+}
+
+enum TemplateType {
+  STANDARD
+  PREMIUM
+}
+
+enum AttendanceStatus {
+  ACCEPTED
+  DECLINED
+  PENDING
+}
+
+enum MealChoice {
+  CHICKEN
+  FISH
+  VEGETARIAN
+  VEGAN
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────
+// Mirrors Supabase auth.users — extended with app-level fields
+
+model User {
+  id        String   @id @default(uuid())
+  authId    String   @unique // Supabase auth.users.id
+  email     String   @unique
+  name      String?
+  phone     String?
+  role      UserRole @default(COUPLE)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedInvitations  Invitation[] @relation("InvitationOwner")
+  plannedClients    Invitation[] @relation("InvitationPlanner")
+
+  @@map("users")
+}
+
+// ─── INVITATIONS ──────────────────────────────────────────────────────
+// One per couple — contains all their wedding page config
+
+model Invitation {
+  id           String           @id @default(uuid())
+  slug         String           @unique // URL: /invitation/[slug]
+  template     TemplateType     @default(PREMIUM)
+  status       InvitationStatus @default(DRAFT)
+
+  // Couple details
+  partner1Name String
+  partner2Name String
+  weddingDate  DateTime
+  venue        String?
+  venueAddress String?
+  mapsLink     String?
+
+  // Page content — stored as JSON for flexibility
+  heroImageUrl     String?
+  coupleImageUrl   String?
+  churchImageUrl   String?
+  footerImageUrl   String?
+  logoUrl          String?
+  openingVideoUrl  String?  // Cloudinary/external URL
+  storyText        String?  @db.Text
+  inviteText       String?  @db.Text
+
+  // Schedule (JSON array of {time, title, description, iconUrl})
+  scheduleJson     Json?
+
+  // Gift / bank details
+  mobileMoneyLabel  String?
+  mobileMoneyName   String?
+  mobileMoneyNumber String?
+  bankName          String?
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankBranch        String?
+
+  // Settings
+  primaryColor     String  @default("#a8795b")
+  accentColor      String  @default("#c9a97e")
+  rsvpDeadline     DateTime?
+  maxGuests        Int?
+  musicUrl         String?  // Background music
+
+  // Ownership
+  ownerId    String
+  owner      User    @relation("InvitationOwner", fields: [ownerId], references: [id])
+  plannerId  String?
+  planner    User?   @relation("InvitationPlanner", fields: [plannerId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  rsvpResponses RsvpResponse[]
+  giftWishes    GiftWish[]
+  galleryImages GalleryImage[]
+
+  @@map("invitations")
+}
+
+// ─── RSVP RESPONSES ───────────────────────────────────────────────────
+
+model RsvpResponse {
+  id           String           @id @default(uuid())
+  invitationId String
+  invitation   Invitation       @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  // Primary guest
+  primaryName  String
+  email        String
+  phone        String?
+  attendance   AttendanceStatus
+
+  // Party
+  guestCount   Int     @default(1)
+  songRequest  String?
+  specialNote  String? @db.Text
+
+  // Guests array (JSON: [{firstName, lastName, meal, dietaryNotes}])
+  guestsJson   Json?
+
+  submittedAt  DateTime @default(now())
+
+  @@map("rsvp_responses")
+}
+
+// ─── GIFT WISHES ──────────────────────────────────────────────────────
+
+model GiftWish {
+  id           String     @id @default(uuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  guestName    String
+  fromFamily   String?
+  wishType     String?
+  message      String  @db.Text
+  isApproved   Boolean @default(true) // flip to false to moderate
+  submittedAt  DateTime @default(now())
+
+  @@map("gift_wishes")
+}
+
+// ─── GALLERY IMAGES ───────────────────────────────────────────────────
+
+model GalleryImage {
+  id           String     @id @default(uuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  url          String
+  caption      String?
+  sortOrder    Int     @default(0)
+  uploadedAt   DateTime @default(now())
+
+  @@map("gallery_images")
+}

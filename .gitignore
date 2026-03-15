@@ -26,7 +26,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env
+.env.local
+.env.*.local
 
 # vercel
 .vercel
@@ -37,3 +39,7 @@ next-env.d.ts
 
 # macOS metadata
 ._*
+
+# Prisma generated client (auto-generated, not needed in repo)
+node_modules/
+.next/
