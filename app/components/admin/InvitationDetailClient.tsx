@@ -2,6 +2,7 @@
 // FILE PATH: app/components/admin/InvitationDetailClient.tsx
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Mail, Heart, ImageIcon, Download,
   CheckCircle, XCircle, Users,
@@ -11,9 +12,12 @@ import {
 import { updateInvitation } from "@/app/actions/invitation";
 import { setInvitationStatus } from "@/app/actions/admin";
 
+
 type Tab = "overview" | "rsvps" | "wishes" | "gallery" | "edit";
 
+
 // ── Types ──────────────────────────────────────────────────────────────
+
 
 interface RsvpRow {
   id: string; primaryName: string; email: string; phone: string | null;
@@ -21,12 +25,15 @@ interface RsvpRow {
   specialNote: string | null; guestsJson: unknown; submittedAt: Date;
 }
 
+
 interface WishRow {
   id: string; guestName: string; fromFamily: string | null;
   wishType: string | null; message: string; isApproved: boolean; submittedAt: Date;
 }
 
+
 interface GalleryRow { id: string; url: string; caption: string | null; }
+
 
 interface InvitationFull {
   id: string; slug: string; status: string; template: string;
@@ -47,9 +54,12 @@ interface InvitationFull {
   _count: { rsvpResponses: number; giftWishes: number; galleryImages: number };
 }
 
+
 interface Props { invitation: InvitationFull; }
 
+
 // ── CSV helpers ────────────────────────────────────────────────────────
+
 
 function downloadCsv(filename: string, headers: string[], rows: (string | number)[][]) {
   const csv = [headers, ...rows]
@@ -62,7 +72,167 @@ function downloadCsv(filename: string, headers: string[], rows: (string | number
   a.click(); URL.revokeObjectURL(a.href);
 }
 
+
+// ── Edit sub-section (extracted to satisfy Rules of Hooks) ─────────────────
+
+
+interface EditSectionProps {
+  form: Record<string, string>;
+  u: (k: string, v: string) => void;
+  saving: boolean;
+  saveMsg: string;
+  handleSave: () => void;
+  inv: InvitationFull;
+  input: string;
+  label: string;
+}
+
+
+function EditSection({ form, u, saving, saveMsg, handleSave, inv, input, label }: EditSectionProps) {
+  const EDIT_TABS = [
+    { id: "wedding",  label: "Wedding Details" },
+    { id: "content",  label: "Page Content" },
+    { id: "media",    label: "Media & Images" },
+    { id: "gifts",    label: "Gift Details" },
+    { id: "settings", label: "Settings" },
+  ];
+
+  const [editTab, setEditTab] = useState("wedding");
+
+  return (
+    <>
+      {/* Sub-tab bar */}
+      <div className="flex border-b border-[#c9a97e]/15 overflow-x-auto">
+        {EDIT_TABS.map(({ id, label: lbl }) => (
+          <button key={id} onClick={() => setEditTab(id)}
+            className="flex-shrink-0 px-5 py-3.5 text-[11px] uppercase tracking-[0.15em] border-b-2 transition-all duration-200"
+            style={{
+              borderBottomColor: editTab === id ? "#a8795b" : "transparent",
+              color:             editTab === id ? "#a8795b" : "#b9927a",
+              background:        editTab === id ? "rgba(168,121,91,0.04)" : "transparent",
+            }}>
+            {lbl}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-6 lg:p-8">
+
+        {/* Wedding Details */}
+        {editTab === "wedding" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div><label className={label}>Partner 1 Name</label><input className={input} value={form.partner1Name} onChange={(e) => u("partner1Name", e.target.value)} placeholder="Barke" /></div>
+            <div><label className={label}>Partner 2 Name</label><input className={input} value={form.partner2Name} onChange={(e) => u("partner2Name", e.target.value)} placeholder="William" /></div>
+            <div className="sm:col-span-2"><label className={label}>Wedding Date & Time</label><input type="datetime-local" className={input} value={form.weddingDate} onChange={(e) => u("weddingDate", e.target.value)} /></div>
+            <div className="sm:col-span-2"><label className={label}>Venue Name</label><input className={input} value={form.venue} onChange={(e) => u("venue", e.target.value)} placeholder="St. Albans Cathedral" /></div>
+            <div className="sm:col-span-2"><label className={label}>Venue Address</label><input className={input} value={form.venueAddress} onChange={(e) => u("venueAddress", e.target.value)} placeholder="Upanga 0124, Dar es Salaam" /></div>
+            <div className="sm:col-span-2"><label className={label}>Google Maps Link</label><input className={input} value={form.mapsLink} onChange={(e) => u("mapsLink", e.target.value)} placeholder="https://maps.app.goo.gl/..." /></div>
+            <div><label className={label}>RSVP Deadline</label><input type="date" className={input} value={form.rsvpDeadline} onChange={(e) => u("rsvpDeadline", e.target.value)} /></div>
+          </div>
+        )}
+
+        {/* Page Content */}
+        {editTab === "content" && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <label className={label}>Invite Text</label>
+              <p className="text-[11px] italic text-[#b9927a] mb-2">Short text shown in the hero / opening sequence</p>
+              <textarea className={`${input} resize-none min-h-[80px]`} value={form.inviteText} onChange={(e) => u("inviteText", e.target.value)} placeholder="You are cordially invited…" />
+            </div>
+            <div>
+              <label className={label}>Our Story</label>
+              <p className="text-[11px] italic text-[#b9927a] mb-2">Shown in the Our Story section. Separate paragraphs with a blank line.</p>
+              <textarea className={`${input} resize-none min-h-[200px]`} value={form.storyText} onChange={(e) => u("storyText", e.target.value)} placeholder="By God's grace two hearts became one…" />
+            </div>
+          </div>
+        )}
+
+        {/* Media & Images */}
+        {editTab === "media" && (
+          <div className="flex flex-col gap-5">
+            <p className="text-[12px] italic text-[#b9927a]">
+              Paste Cloudinary, Supabase, or any public image/video URL. Upload files first from the Gallery tab or Supabase dashboard.
+            </p>
+            {[
+              { key: "heroImageUrl",    lbl: "Hero Background Image URL",  hint: "Full-page background on the hero section" },
+              { key: "coupleImageUrl",  lbl: "Couple Image URL",           hint: "Portrait photo shown in Our Story section" },
+              { key: "churchImageUrl",  lbl: "Church / Venue Image URL",   hint: "Illustration or photo shown in the venue section" },
+              { key: "openingVideoUrl", lbl: "Opening Video URL",          hint: "Full-screen video before the page opens (.mp4)" },
+            ].map(({ key, lbl, hint }) => (
+              <div key={key}>
+                <label className={label}>{lbl}</label>
+                <p className="text-[10px] italic text-[#b9927a]/70 mb-2">{hint}</p>
+                <input className={input} value={form[key] ?? ""} onChange={(e) => u(key, e.target.value)} placeholder="https://..." />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Gift Details */}
+        {editTab === "gifts" && (
+          <div className="flex flex-col gap-6">
+            <div className="border border-[#c9a97e]/20 p-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold mb-4">Mobile Money</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div><label className={label}>Provider Label</label><input className={input} value={form.mobileMoneyLabel} onChange={(e) => u("mobileMoneyLabel", e.target.value)} placeholder="SELCOM, M-Pesa…" /></div>
+                <div><label className={label}>Account Name</label><input className={input} value={form.mobileMoneyName} onChange={(e) => u("mobileMoneyName", e.target.value)} placeholder="Full name" /></div>
+                <div><label className={label}>Phone Number</label><input className={input} value={form.mobileMoneyNumber} onChange={(e) => u("mobileMoneyNumber", e.target.value)} placeholder="+255 7XX XXX XXXX" /></div>
+              </div>
+            </div>
+            <div className="border border-[#c9a97e]/20 p-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold mb-4">Bank Transfer</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label className={label}>Bank Name</label><input className={input} value={form.bankName} onChange={(e) => u("bankName", e.target.value)} placeholder="CRDB Bank Tanzania" /></div>
+                <div><label className={label}>Account Name</label><input className={input} value={form.bankAccountName} onChange={(e) => u("bankAccountName", e.target.value)} placeholder="Name on account" /></div>
+                <div><label className={label}>Account Number</label><input className={input} value={form.bankAccountNumber} onChange={(e) => u("bankAccountNumber", e.target.value)} placeholder="Account number" /></div>
+                <div><label className={label}>Branch</label><input className={input} value={form.bankBranch} onChange={(e) => u("bankBranch", e.target.value)} placeholder="Branch name" /></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Settings */}
+        {editTab === "settings" && (
+          <div className="flex flex-col gap-5">
+            <div>
+              <label className={label}>Status</label>
+              <select className={input} value={form.status} onChange={(e) => u("status", e.target.value)}>
+                <option value="DRAFT">Draft — not visible to guests</option>
+                <option value="ACTIVE">Active — live and visible</option>
+                <option value="EXPIRED">Expired</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+            </div>
+            <div className="bg-[#f7f3ee] border border-[#c9a97e]/15 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#9d7760] mb-1">Invitation URL</p>
+              <p className="text-[13px] font-medium text-[#482612] font-mono">/invitation/{inv.slug}</p>
+            </div>
+            <div className="bg-[#f7f3ee] border border-[#c9a97e]/15 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#9d7760] mb-1">Template</p>
+              <p className="text-[13px] font-medium text-[#482612]">{inv.template}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Save button — always visible in edit tab */}
+        <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-[#c9a97e]/15">
+          {saveMsg && <p className="text-[11px] text-[#5a7a5a] italic">{saveMsg}</p>}
+          <button onClick={handleSave} disabled={saving}
+            className="flex items-center gap-2 bg-[#a8795b] text-white text-[11px] uppercase tracking-[0.22em] px-8 py-3.5 font-semibold hover:bg-[#482612] disabled:bg-[#c9a97e]/50 transition-colors duration-300">
+            {saving
+              ? <><Loader2 size={13} className="animate-spin" /> Saving…</>
+              : <><Save size={13} /> Save Changes</>
+            }
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+
 // ── Main component ─────────────────────────────────────────────────────
+
 
 export function InvitationDetailClient({ invitation: initial }: Props) {
   const [tab,      setTab]      = useState<Tab>("overview");
@@ -100,11 +270,11 @@ export function InvitationDetailClient({ invitation: initial }: Props) {
     status:            inv.status            ?? "DRAFT",
   });
 
-  const [saving,     setSaving]     = useState(false);
-  const [saveMsg,    setSaveMsg]    = useState("");
-  const [toggling,   setToggling]   = useState(false);
+  const [saving,   setSaving]   = useState(false);
+  const [saveMsg,  setSaveMsg]  = useState("");
+  const [toggling, setToggling] = useState(false);
 
-  const u = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const u = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSave = async () => {
     setSaving(true); setSaveMsg("");
@@ -115,10 +285,6 @@ export function InvitationDetailClient({ invitation: initial }: Props) {
       venue:             form.venue             || undefined,
       venueAddress:      form.venueAddress      || undefined,
       mapsLink:          form.mapsLink          || undefined,
-// heroImageUrl is not expected by updateInvitation; omit it
-      //coupleImageUrl:    form.coupleImageUrl    || undefined,
-      //churchImageUrl:    form.churchImageUrl    || undefined,
-     // openingVideoUrl:   form.openingVideoUrl   || undefined,
       inviteText:        form.inviteText        || undefined,
       storyText:         form.storyText         || undefined,
       mobileMoneyLabel:  form.mobileMoneyLabel  || undefined,
@@ -131,7 +297,6 @@ export function InvitationDetailClient({ invitation: initial }: Props) {
       rsvpDeadline:      form.rsvpDeadline      ? new Date(form.rsvpDeadline) : undefined,
       status:            form.status as "DRAFT" | "ACTIVE" | "EXPIRED" | "SUSPENDED",
     });
-    // Update local state so header reflects changes immediately
     setInv((prev) => ({
       ...prev,
       partner1Name: form.partner1Name || prev.partner1Name,
@@ -427,8 +592,13 @@ export function InvitationDetailClient({ invitation: initial }: Props) {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {inv.galleryImages.map((img) => (
                 <div key={img.id} className="relative aspect-square bg-[#f7f3ee] border border-[#c9a97e]/15 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={img.caption ?? ""} className="w-full h-full object-cover" />
+                  <Image
+                    src={img.url}
+                    alt={img.caption ?? ""}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                  />
                 </div>
               ))}
             </div>
@@ -439,150 +609,19 @@ export function InvitationDetailClient({ invitation: initial }: Props) {
       {/* ── EDIT ── */}
       {tab === "edit" && (
         <div className="bg-white border border-[#c9a97e]/18">
-
-          {/* Edit sub-tabs */}
-          {(() => {
-            const EDIT_TABS = [
-              { id: "wedding",  label: "Wedding Details" },
-              { id: "content",  label: "Page Content" },
-              { id: "media",    label: "Media & Images" },
-              { id: "gifts",    label: "Gift Details" },
-              { id: "settings", label: "Settings" },
-            ];
-            const [editTab, setEditTab] = useState("wedding");
-
-            return (
-              <>
-                {/* Sub-tab bar */}
-                <div className="flex border-b border-[#c9a97e]/15 overflow-x-auto">
-                  {EDIT_TABS.map(({ id, label: lbl }) => (
-                    <button key={id} onClick={() => setEditTab(id)}
-                      className="flex-shrink-0 px-5 py-3.5 text-[11px] uppercase tracking-[0.15em] border-b-2 transition-all duration-200"
-                      style={{
-                        borderBottomColor: editTab === id ? "#a8795b" : "transparent",
-                        color:             editTab === id ? "#a8795b" : "#b9927a",
-                        background:        editTab === id ? "rgba(168,121,91,0.04)" : "transparent",
-                      }}>
-                      {lbl}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="p-6 lg:p-8">
-
-                  {/* Wedding Details */}
-                  {editTab === "wedding" && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div><label className={label}>Partner 1 Name</label><input className={input} value={form.partner1Name} onChange={(e) => u("partner1Name", e.target.value)} placeholder="Barke" /></div>
-                      <div><label className={label}>Partner 2 Name</label><input className={input} value={form.partner2Name} onChange={(e) => u("partner2Name", e.target.value)} placeholder="William" /></div>
-                      <div className="sm:col-span-2"><label className={label}>Wedding Date & Time</label><input type="datetime-local" className={input} value={form.weddingDate} onChange={(e) => u("weddingDate", e.target.value)} /></div>
-                      <div className="sm:col-span-2"><label className={label}>Venue Name</label><input className={input} value={form.venue} onChange={(e) => u("venue", e.target.value)} placeholder="St. Albans Cathedral" /></div>
-                      <div className="sm:col-span-2"><label className={label}>Venue Address</label><input className={input} value={form.venueAddress} onChange={(e) => u("venueAddress", e.target.value)} placeholder="Upanga 0124, Dar es Salaam" /></div>
-                      <div className="sm:col-span-2"><label className={label}>Google Maps Link</label><input className={input} value={form.mapsLink} onChange={(e) => u("mapsLink", e.target.value)} placeholder="https://maps.app.goo.gl/..." /></div>
-                      <div><label className={label}>RSVP Deadline</label><input type="date" className={input} value={form.rsvpDeadline} onChange={(e) => u("rsvpDeadline", e.target.value)} /></div>
-                    </div>
-                  )}
-
-                  {/* Page Content */}
-                  {editTab === "content" && (
-                    <div className="flex flex-col gap-5">
-                      <div>
-                        <label className={label}>Invite Text</label>
-                        <p className="text-[11px] italic text-[#b9927a] mb-2">Short text shown in the hero / opening sequence</p>
-                        <textarea className={`${input} resize-none min-h-[80px]`} value={form.inviteText} onChange={(e) => u("inviteText", e.target.value)} placeholder="You are cordially invited…" />
-                      </div>
-                      <div>
-                        <label className={label}>Our Story</label>
-                        <p className="text-[11px] italic text-[#b9927a] mb-2">Shown in the Our Story section. Separate paragraphs with a blank line.</p>
-                        <textarea className={`${input} resize-none min-h-[200px]`} value={form.storyText} onChange={(e) => u("storyText", e.target.value)} placeholder="By God's grace two hearts became one…" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Media & Images */}
-                  {editTab === "media" && (
-                    <div className="flex flex-col gap-5">
-                      <p className="text-[12px] italic text-[#b9927a]">
-                        Paste Cloudinary, Supabase, or any public image/video URL. Upload files first from the Gallery tab or Supabase dashboard.
-                      </p>
-                      {[
-                        { key: "heroImageUrl",    lbl: "Hero Background Image URL",      hint: "Full-page background on the hero section" },
-                        { key: "coupleImageUrl",  lbl: "Couple Image URL",               hint: "Portrait photo shown in Our Story section" },
-                        { key: "churchImageUrl",  lbl: "Church / Venue Image URL",       hint: "Illustration or photo shown in the venue section" },
-                        { key: "openingVideoUrl", lbl: "Opening Video URL",              hint: "Full-screen video shown before the page opens (.mp4)" },
-                      ].map(({ key, lbl, hint }) => (
-                        <div key={key}>
-                          <label className={label}>{lbl}</label>
-                          <p className="text-[10px] italic text-[#b9927a]/70 mb-2">{hint}</p>
-                          <input className={input} value={form[key as keyof typeof form]} onChange={(e) => u(key as keyof typeof form, e.target.value)} placeholder="https://..." />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Gift Details */}
-                  {editTab === "gifts" && (
-                    <div className="flex flex-col gap-6">
-                      <div className="border border-[#c9a97e]/20 p-5">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold mb-4">Mobile Money</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div><label className={label}>Provider Label</label><input className={input} value={form.mobileMoneyLabel} onChange={(e) => u("mobileMoneyLabel", e.target.value)} placeholder="SELCOM, M-Pesa…" /></div>
-                          <div><label className={label}>Account Name</label><input className={input} value={form.mobileMoneyName} onChange={(e) => u("mobileMoneyName", e.target.value)} placeholder="Full name" /></div>
-                          <div><label className={label}>Phone Number</label><input className={input} value={form.mobileMoneyNumber} onChange={(e) => u("mobileMoneyNumber", e.target.value)} placeholder="+255 7XX XXX XXXX" /></div>
-                        </div>
-                      </div>
-                      <div className="border border-[#c9a97e]/20 p-5">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold mb-4">Bank Transfer</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div><label className={label}>Bank Name</label><input className={input} value={form.bankName} onChange={(e) => u("bankName", e.target.value)} placeholder="CRDB Bank Tanzania" /></div>
-                          <div><label className={label}>Account Name</label><input className={input} value={form.bankAccountName} onChange={(e) => u("bankAccountName", e.target.value)} placeholder="Name on account" /></div>
-                          <div><label className={label}>Account Number</label><input className={input} value={form.bankAccountNumber} onChange={(e) => u("bankAccountNumber", e.target.value)} placeholder="Account number" /></div>
-                          <div><label className={label}>Branch</label><input className={input} value={form.bankBranch} onChange={(e) => u("bankBranch", e.target.value)} placeholder="Branch name" /></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Settings */}
-                  {editTab === "settings" && (
-                    <div className="flex flex-col gap-5">
-                      <div>
-                        <label className={label}>Status</label>
-                        <select className={input} value={form.status} onChange={(e) => u("status", e.target.value)}>
-                          <option value="DRAFT">Draft — not visible to guests</option>
-                          <option value="ACTIVE">Active — live and visible</option>
-                          <option value="EXPIRED">Expired</option>
-                          <option value="SUSPENDED">Suspended</option>
-                        </select>
-                      </div>
-                      <div className="bg-[#f7f3ee] border border-[#c9a97e]/15 p-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-[#9d7760] mb-1">Invitation URL</p>
-                        <p className="text-[13px] font-medium text-[#482612] font-mono">/invitation/{inv.slug}</p>
-                      </div>
-                      <div className="bg-[#f7f3ee] border border-[#c9a97e]/15 p-4">
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-[#9d7760] mb-1">Template</p>
-                        <p className="text-[13px] font-medium text-[#482612]">{inv.template}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Save button — always visible in edit tab */}
-                  <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-[#c9a97e]/15">
-                    {saveMsg && <p className="text-[11px] text-[#5a7a5a] italic">{saveMsg}</p>}
-                    <button onClick={handleSave} disabled={saving}
-                      className="flex items-center gap-2 bg-[#a8795b] text-white text-[11px] uppercase tracking-[0.22em] px-8 py-3.5 font-semibold hover:bg-[#482612] disabled:bg-[#c9a97e]/50 transition-colors duration-300">
-                      {saving
-                        ? <><Loader2 size={13} className="animate-spin" /> Saving…</>
-                        : <><Save size={13} /> Save Changes</>
-                      }
-                    </button>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+          <EditSection
+            form={form}
+            u={u}
+            saving={saving}
+            saveMsg={saveMsg}
+            handleSave={handleSave}
+            inv={inv}
+            input={input}
+            label={label}
+          />
         </div>
       )}
+
     </div>
   );
 }
