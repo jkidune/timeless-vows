@@ -7,16 +7,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 
 const NAV_LEFT = [
-  { label: "HOME",      href: "#home",       isPage: false },
-  { label: "OUR STORY", href: "#our-story",  isPage: false },
-  { label: "DETAILS",   href: "#details",    isPage: false },
+  { label: "Home",      href: "#home",       isPage: false },
+  { label: "Our Story", href: "#our-story",  isPage: false },
+  { label: "Details",   href: "#details",    isPage: false },
 ];
 
 const NAV_RIGHT = [
-  { label: "GALLERY",  href: "#gallery",              isPage: false },
-  { label: "GIFT",     href: "#gift",                 isPage: false },
+  { label: "Gallery",  href: "#gallery",              isPage: false },
+  { label: "Gift",     href: "#gift",                 isPage: false },
   { label: "RSVP",     href: "/invitation/rsvp",      isPage: true  },
   { label: "FAQ",      href: "/invitation/faq",       isPage: true  },
 ];
@@ -63,19 +64,24 @@ export function PremiumNavbar() {
 
           {/* Center logo */}
           <a href="#home" className="shrink-0">
-            {/*
-              LOGO: /public/images/premium/bw-logo.png
-              94×92px transparent PNG monogram from Figma
-            */}
-            <Image
-              src="/images/premium/bw-logo.png"
-              alt="Barke and William"
-              width={80}
-              height={78}
-              className="object-contain transition-opacity duration-300"
-              style={{ opacity: scrolled ? 0.85 : 1 }}
-              priority
-            />
+            <div className="relative w-[80px] h-[78px]">
+              <Image
+                src="/images/premium/bw-logo.png"
+                alt="Barke and William"
+                fill
+                sizes="80px"
+                className={`object-contain transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"}`}
+                priority
+              />
+              <Image
+                src="/images/premium/dark-bw-logo.png"
+                alt="Barke and William"
+                fill
+                sizes="80px"
+                className={`object-contain transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${scrolled ? "opacity-100 scale-100" : "opacity-0 scale-[1.02]"}`}
+                priority
+              />
+            </div>
           </a>
 
           {/* Right links */}
@@ -91,68 +97,89 @@ export function PremiumNavbar() {
 
           {/* Mobile hamburger */}
           <button
-            onClick={() => setMenuOpen(true)}
-            className={`lg:hidden p-2 transition-colors duration-300 ${scrolled ? "text-[#482612]" : "text-white"}`}
-            aria-label="Open menu"
+            onClick={() => setMenuOpen((v) => !v)}
+            className={`lg:hidden p-2 transition-colors duration-500 ${scrolled ? "text-[#482612]" : "text-white"}`}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
-            <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-              <rect width="22" height="2" fill="currentColor" />
-              <rect y="7" width="16" height="2" fill="currentColor" />
-              <rect y="14" width="22" height="2" fill="currentColor" />
-            </svg>
+            <div className="relative w-[22px] h-[16px]">
+              <span
+                className={`absolute left-0 top-0 h-[2px] w-full bg-current transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${menuOpen ? "translate-y-[7px] rotate-45" : "translate-y-0 rotate-0"}`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] h-[2px] w-[16px] bg-current transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${menuOpen ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"}`}
+              />
+              <span
+                className={`absolute left-0 bottom-0 h-[2px] w-full bg-current transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${menuOpen ? "-translate-y-[7px] -rotate-45" : "translate-y-0 rotate-0"}`}
+              />
+            </div>
           </button>
         </nav>
       </header>
 
       {/* ── Mobile drawer ── */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-[150] bg-[#1c1713] flex flex-col items-center justify-center gap-6">
-          <button
-            onClick={() => setMenuOpen(false)}
-            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors text-xl"
-            aria-label="Close menu"
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[150] bg-[#1c1713] flex flex-col items-center justify-center gap-6"
           >
-            ✕
-          </button>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors duration-500 text-xl"
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
 
-          {/* Logo in mobile drawer */}
-          <Image
-            src="/images/premium/bw-logo.png"
-            alt="Barke and William"
-            width={70}
-            height={68}
-            className="object-contain opacity-50 mb-2"
-          />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-center justify-center gap-6"
+            >
+              <Image
+                src="/images/premium/bw-logo.png"
+                alt="Barke and William"
+                width={70}
+                height={68}
+                className="object-contain opacity-60 mb-1"
+              />
 
-          {allNavItems.map(({ label, href, isPage }) =>
-            isPage ? (
-              <Link
-                key={label}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="text-[28px] text-[#f7f3ee] hover:text-[#c9a97e] transition-colors duration-300 tracking-[0.1em]"
-                style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic" }}
-              >
-                {label}
-              </Link>
-            ) : (
-              <a
-                key={label}
-                href={href}
-                onClick={() => setMenuOpen(false)}
-                className="text-[28px] text-[#f7f3ee] hover:text-[#c9a97e] transition-colors duration-300 tracking-[0.1em]"
-                style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic" }}
-              >
-                {label}
-              </a>
-            )
-          )}
+              {allNavItems.map(({ label, href, isPage }) =>
+                isPage ? (
+                  <Link
+                    key={label}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-[28px] text-[#f7f3ee] hover:text-[#c9a97e] transition-colors duration-500 tracking-[0.02em]"
+                    style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic" }}
+                  >
+                    {label}
+                  </Link>
+                ) : (
+                  <a
+                    key={label}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-[28px] text-[#f7f3ee] hover:text-[#c9a97e] transition-colors duration-500 tracking-[0.02em]"
+                    style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic" }}
+                  >
+                    {label}
+                  </a>
+                )
+              )}
 
-          <p className="text-[10px] uppercase tracking-[0.25em] text-white/20 mt-4">
-            02 · May · 2026
-          </p>
-        </div>
-      )}
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/20 mt-3">
+                02 · May · 2026
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

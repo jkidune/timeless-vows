@@ -12,7 +12,11 @@ interface Particle {
   delay: number;
 }
 
-export default function Sparkles() {
+type SparklesProps = {
+  color?: string;
+};
+
+export default function Sparkles({ color = "#D7B980" }: SparklesProps) {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -37,13 +41,14 @@ export default function Sparkles() {
       {particles.map((p) => (
         <motion.div
           key={p.id}
-          className="absolute rounded-full bg-[#D7B980]"
+          className="absolute rounded-full"
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            boxShadow: `0 0 ${p.size * 2}px rgba(215, 185, 128, 0.4)`,
+            background: color,
+            boxShadow: `0 0 ${p.size * 2}px ${color}66`,
           }}
           initial={{ opacity: 0, y: 0 }}
           animate={{

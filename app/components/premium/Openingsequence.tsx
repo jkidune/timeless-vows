@@ -12,8 +12,9 @@ interface Props {
 }
 
 export function OpeningSequence({ onComplete }: Props) {
-  const [phase, setPhase] = useState<Phase>("gate");
-  const [mounted, setMounted] = useState(false);
+  const [phase, setPhase]           = useState<Phase>("gate");
+  const [mounted, setMounted]       = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -21,15 +22,24 @@ export function OpeningSequence({ onComplete }: Props) {
     if (sessionStorage.getItem("tv_intro_seen")) {
       setPhase("done");
       onComplete();
+      return;
     }
+
+    // Force-attempt video play after a short delay
+    // This handles browsers that need a nudge
+    const t = setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+          // Play failed silently — fallback bg already showing
+        });
+      }
+    }, 300);
+
+    return () => clearTimeout(t);
   }, [onComplete]);
 
   const handleEnter = () => {
     setPhase("fading");
-    if (videoRef.current) {
-      videoRef.current.muted = false;
-      videoRef.current.volume = 0.35;
-    }
     setTimeout(() => {
       setPhase("done");
       sessionStorage.setItem("tv_intro_seen", "1");
@@ -46,57 +56,104 @@ export function OpeningSequence({ onComplete }: Props) {
           from { opacity: 0; transform: translateY(18px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .tv-a1 { animation: tv-fadeUp 1.2s ease forwards 0.3s; opacity: 0; }
+        @keyframes tv-shimmer {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .tv-a1 { animation: tv-fadeUp 1.2s ease forwards 0.3s;  opacity: 0; }
         .tv-a2 { animation: tv-fadeUp 1.2s ease forwards 0.55s; opacity: 0; }
-        .tv-a3 { animation: tv-fadeUp 1.4s ease forwards 0.8s; opacity: 0; }
-        .tv-a4 { animation: tv-fadeUp 1.2s ease forwards 1.0s; opacity: 0; }
-        .tv-a5 { animation: tv-fadeUp 1.2s ease forwards 1.2s; opacity: 0; }
-        .tv-a6 { animation: tv-fadeUp 1.0s ease forwards 1.5s; opacity: 0; }
+        .tv-a3 { animation: tv-fadeUp 1.4s ease forwards 0.8s;  opacity: 0; }
+        .tv-a4 { animation: tv-fadeUp 1.2s ease forwards 1.0s;  opacity: 0; }
+        .tv-a5 { animation: tv-fadeUp 1.2s ease forwards 1.2s;  opacity: 0; }
+        .tv-a6 { animation: tv-fadeUp 1.0s ease forwards 1.5s;  opacity: 0; }
+        .tv-shimmer-bg {
+          background: linear-gradient(
+            135deg,
+            #1a110a 0%,
+            #2c1d12 20%,
+            #3d2b1f 40%,
+            #1c1510 60%,
+            #2a1e15 80%,
+            #1a110a 100%
+          );
+          background-size: 400% 400%;
+          animation: tv-shimmer 8s ease infinite;
+        }
       `}</style>
 
       <div
         className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden"
         style={{ pointerEvents: phase === "fading" ? "none" : "auto" }}
       >
-        {/* Background video */}
+        {/* ── Fallback gradient background — always visible until video loads ── */}
+        <div
+          className="tv-shimmer-bg absolute inset-0 transition-opacity duration-1000"
+          style={{ opacity: videoReady ? 0 : 1 }}
+        />
+
+        {/* ── Grain texture overlay on fallback ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
+            opacity: 0.4,
+          }}
+        />
+
+        {/* ── Video — fades in once loaded, fades out on exit ── */}
         <video
           ref={videoRef}
           autoPlay
           muted
           playsInline
           loop
+          preload="auto"
           className="absolute inset-0 h-full w-full object-cover"
           style={{
-            opacity: phase === "fading" ? 0 : 1,
-            transition: "opacity 1.4s ease-in-out",
+            opacity: videoReady && phase !== "fading" ? 1 : 0,
+            transition: "opacity 1.5s ease-in-out",
           }}
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoReady(false)} // stay on gradient if video errors
         >
+          {/*
+            VIDEO FILE: /public/videos/premium/opening.mp4
+            ─────────────────────────────────────────────
+            IMPORTANT FOR VERCEL:
+            Keep file under 50MB. If larger, host on Cloudinary or Mux
+            and replace the src with the external URL.
+            
+            Cloudinary free tier: cloudinary.com
+            → Upload video → copy the delivery URL
+            → Replace src="/videos/premium/opening.mp4"
+               with   src="https://res.cloudinary.com/YOUR_CLOUD/video/upload/opening.mp4"
+          */}
           <source src="/videos/premium/opening.mp4" type="video/mp4" />
         </video>
 
-        {/* Dark cinematic overlay */}
+        {/* ── Dark cinematic overlay on top of video ── */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg,rgba(20,15,10,0.72) 0%,rgba(20,15,10,0.42) 45%,rgba(20,15,10,0.80) 100%)",
+            background: "linear-gradient(180deg,rgba(20,15,10,0.70) 0%,rgba(20,15,10,0.38) 50%,rgba(20,15,10,0.78) 100%)",
             opacity: phase === "fading" ? 0 : 1,
-            transition: "opacity 0.9s ease-in-out",
+            transition: "opacity 1s ease",
           }}
         />
 
-        {/* White fade-to-parchment overlay */}
+        {/* ── Parchment white fade-out ── */}
         <div
-          className="absolute inset-0 bg-[#f7f3ee]"
+          className="absolute inset-0 bg-[#f7f3ee] pointer-events-none"
           style={{
             opacity: phase === "fading" ? 1 : 0,
             transition: "opacity 2.2s ease-in-out",
-            pointerEvents: "none",
           }}
         />
 
-        {/* Content */}
+        {/* ── Gate content ── */}
         <div
-          className="relative z-10 flex flex-col items-center gap-5 text-center px-6"
+          className="relative z-10 flex flex-col items-center gap-5 text-center px-6 w-full max-w-[900px]"
           style={{
             opacity: phase === "fading" ? 0 : 1,
             transition: "opacity 0.5s ease",
@@ -112,18 +169,21 @@ export function OpeningSequence({ onComplete }: Props) {
 
           <h1
             className="tv-a3 text-[clamp(52px,10vw,130px)] text-white leading-none"
-            style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontWeight: 400 }}
+            style={{
+              fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)",
+              fontWeight: 400,
+            }}
           >
             Barke & William
           </h1>
 
           {/* Gold ornament */}
           <div className="tv-a4 flex items-center gap-4">
-            <div className="h-px w-14" style={{ background: "linear-gradient(to right, transparent, rgba(201,169,126,0.7))" }} />
+            <div className="h-px w-14" style={{ background: "linear-gradient(to right,transparent,rgba(201,169,126,0.7))" }} />
             <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a97e]/80 shrink-0" />
             <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a97e] shrink-0" />
             <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a97e]/80 shrink-0" />
-            <div className="h-px w-14" style={{ background: "linear-gradient(to left, transparent, rgba(201,169,126,0.7))" }} />
+            <div className="h-px w-14" style={{ background: "linear-gradient(to left,transparent,rgba(201,169,126,0.7))" }} />
           </div>
 
           <button

@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Sparkles from "../Sparkles";
 
 const WEDDING_DATE = new Date("2026-05-02T09:00:00Z"); // 12:00 EAT
 
@@ -42,48 +43,19 @@ export function CountdownFooter() {
   return (
     <>
       <style>{`
-        @keyframes ring-rotate {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes ring-rotate-reverse {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(-360deg); }
-        }
-        @keyframes ring-pulse {
-          0%, 100% { opacity: 0.06; }
-          50%       { opacity: 0.13; }
-        }
         @keyframes count-flip {
           0%   { transform: translateY(0);    opacity: 1; }
           45%  { transform: translateY(-12px); opacity: 0; }
           55%  { transform: translateY(12px);  opacity: 0; }
           100% { transform: translateY(0);    opacity: 1; }
         }
-        .ring-1 { animation: ring-rotate         28s linear infinite; }
-        .ring-2 { animation: ring-rotate-reverse 20s linear infinite; }
-        .ring-3 { animation: ring-pulse           5s ease-in-out infinite; }
-        .ring-4 { animation: ring-pulse           7s ease-in-out infinite 1.5s; }
       `}</style>
 
       {/* ── COUNTDOWN ── */}
-      <section className="relative overflow-hidden px-6 py-[110px]"
+      <section className="relative overflow-hidden isolate px-6 py-[110px]"
         style={{ background: "linear-gradient(160deg,#1a120c 0%,#241810 40%,#1c1510 70%,#100d09 100%)" }}
       >
-        {/* ── Animated decorative rings ── */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-          {/* Outer large rotating ring */}
-          <div className="ring-1 absolute h-[700px] w-[700px] rounded-full border border-[#c9a97e]/8" />
-          {/* Second ring */}
-          <div className="ring-2 absolute h-[520px] w-[520px] rounded-full border border-[#c9a97e]/6" />
-          {/* Third pulsing ring */}
-          <div className="ring-3 absolute h-[380px] w-[380px] rounded-full border border-[#c9a97e]/10" />
-          {/* Inner glow */}
-          <div className="ring-4 absolute h-[240px] w-[240px] rounded-full border border-[#c9a97e]/12" />
-          {/* Soft radial glow at centre */}
-          <div className="absolute h-[400px] w-[400px] rounded-full opacity-[0.07]"
-            style={{ background: "radial-gradient(circle,#c9a97e 0%,transparent 70%)" }} />
-        </div>
+        <Sparkles color="#c9a97e" />
 
         {/* ── Botanical SVG flanking — optional if file exists ── */}
         <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none opacity-20"

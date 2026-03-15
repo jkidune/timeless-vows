@@ -116,7 +116,7 @@ export function PremiumHero({ visible }: Props) {
 
             {/* Invitation text */}
             <p
-              className="max-w-[680px] text-[clamp(15px,1.8vw,22px)] italic leading-[1.6] text-white/88"
+              className="max-w-[680px] text-[clamp(15px,1.8vw,22px)] italic leading-[1.6] text-white"
               style={{
                 fontFamily: "'Cormorant Garamond',serif",
                 opacity: animate ? 1 : 0,
