@@ -1,29 +1,44 @@
-// ─────────────────────────────────────────────────────────────────────
-// FILE PATH: app/components/premium/CountdownFooter.tsx
-// Background: layered dark gradient with animated gold particle rings
-// No photo required — looks elegant and loads instantly
-// ─────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Sparkles from "../Sparkles";
 
-const WEDDING_DATE = new Date("2026-05-02T09:00:00Z"); // 12:00 EAT
-
-function getTimeLeft() {
-  const diff = WEDDING_DATE.getTime() - Date.now();
-  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, over: true };
-  return {
-    days:    Math.floor(diff / 86400000),
-    hours:   Math.floor((diff / 3600000) % 24),
-    minutes: Math.floor((diff / 60000) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-    over: false,
-  };
+interface Props {
+  weddingDate?:  Date;
+  partner1?:     string;
+  partner2?:     string;
+  slug?:         string;
 }
 
-export function CountdownFooter() {
+export function CountdownFooter({
+  weddingDate = new Date("2026-05-02T09:00:00Z"),
+  partner1    = "Barke",
+  partner2    = "William",
+  slug        = "barke-william-2026",
+}: Props) {
+  const WEDDING_DATE = new Date(weddingDate);
+
+  // Format "02 · May · 2026"
+  const dateLabel = WEDDING_DATE.toLocaleDateString("en-GB", {
+    day: "2-digit", month: "short", year: "numeric",
+  }).replace(/ /g, " · ");
+
+  // Monogram — first letter of each name
+  const monogram = `${partner1.charAt(0)} & ${partner2.charAt(0)}`;
+
+  function getTimeLeft() {
+    const diff = WEDDING_DATE.getTime() - Date.now();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, over: true };
+    return {
+      days:    Math.floor(diff / 86400000),
+      hours:   Math.floor((diff / 3600000) % 24),
+      minutes: Math.floor((diff / 60000) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+      over: false,
+    };
+  }
+
   const [time, setTime] = useState(getTimeLeft);
   const [mounted, setMounted] = useState(false);
 
@@ -31,6 +46,7 @@ export function CountdownFooter() {
     setMounted(true);
     const id = setInterval(() => setTime(getTimeLeft()), 1000);
     return () => clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const units = [
@@ -57,7 +73,6 @@ export function CountdownFooter() {
       >
         <Sparkles color="#c9a97e" />
 
-        {/* ── Botanical SVG flanking — optional if file exists ── */}
         <div className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none opacity-20"
           style={{
             backgroundImage: "url('/illustrations/premium/footer-botanical.svg')",
@@ -67,7 +82,6 @@ export function CountdownFooter() {
           }}
         />
 
-        {/* ── Content ── */}
         <div className="relative z-10 mx-auto max-w-[1280px] flex flex-col items-center gap-10 text-center">
 
           <div className="flex flex-col items-center gap-3">
@@ -93,7 +107,6 @@ export function CountdownFooter() {
             <div className="grid grid-cols-4 gap-6 md:gap-16">
               {units.map(({ label, value }) => (
                 <div key={label} className="flex flex-col items-center gap-3">
-                  {/* Number with subtle border */}
                   <div
                     className="flex items-center justify-center border border-[#c9a97e]/15 bg-white/[0.03]"
                     style={{ width: "clamp(72px,10vw,120px)", height: "clamp(72px,10vw,120px)" }}
@@ -117,11 +130,11 @@ export function CountdownFooter() {
             </div>
           )}
 
-          {/* Separator */}
+          {/* Date label — from prop */}
           <div className="flex items-center gap-4">
             <div className="h-px w-10 bg-[#c9a97e]/25" />
             <p className="text-[11px] uppercase tracking-[0.2em] text-[#c9a97e]/45">
-              02 · May · 2026 · Dar es Salaam
+              {dateLabel}
             </p>
             <div className="h-px w-10 bg-[#c9a97e]/25" />
           </div>
@@ -129,7 +142,7 @@ export function CountdownFooter() {
           {/* CTA buttons */}
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/invitation/rsvp"
+              href={`/invitation/${slug}/rsvp`}
               className="bg-[#a8795b] text-white text-[11px] uppercase tracking-[0.22em] px-10 py-4 hover:bg-[#c9a97e] transition-colors duration-300 font-medium"
             >
               RSVP Now
@@ -148,15 +161,14 @@ export function CountdownFooter() {
       <footer className="bg-[#100d09] px-6 py-14">
         <div className="mx-auto max-w-[1280px] flex flex-col items-center gap-7 text-center">
 
-          {/* Monogram */}
+          {/* Monogram — from partner names */}
           <div
             className="text-[clamp(44px,7vw,76px)] text-[#c9a97e]/35 leading-none"
             style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic", fontWeight: 400 }}
           >
-            B & W
+            {monogram}
           </div>
 
-          {/* Ornament */}
           <div className="flex items-center gap-3">
             <div className="h-px w-10 bg-[#c9a97e]/15" />
             <div className="h-1 w-1 rotate-45 bg-[#c9a97e]/30 shrink-0" />
@@ -166,7 +178,7 @@ export function CountdownFooter() {
           </div>
 
           <p className="text-[10px] uppercase tracking-[0.25em] text-white/20">
-            02 · May · 2026
+            {dateLabel}
           </p>
 
           <p
@@ -184,8 +196,8 @@ export function CountdownFooter() {
               { label: "Details",   href: "#details" },
               { label: "Gallery",   href: "#gallery" },
               { label: "Gift",      href: "#gift" },
-              { label: "RSVP",      href: "/invitation/rsvp" },
-              { label: "FAQ",       href: "/invitation/faq" },
+              { label: "RSVP",      href: `/invitation/${slug}/rsvp` },
+              { label: "FAQ",       href: `/invitation/${slug}/faq` },
             ].map(({ label, href }) => (
               href.startsWith("/") ? (
                 <Link key={label} href={href}

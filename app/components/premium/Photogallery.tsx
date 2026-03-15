@@ -3,56 +3,45 @@
 import Image from "next/image";
 import { useState } from "react";
 
-/*
-  ─── IMAGE NAMING GUIDE ────────────────────────────────────────────────
-  PLACE ALL GALLERY IMAGES AT: /public/images/premium/gallery/
+interface GalleryImage {
+  id?: string;
+  url: string;
+  caption?: string | null;
+}
 
-  Name them exactly as follows:
-    gallery-01.jpg  → Hero couple portrait (tall/portrait crop)
-    gallery-02.jpg  → Ceremony moment or floral arch
-    gallery-03.jpg  → Close-up detail (rings, flowers, etc.)
-    gallery-04.jpg  → Wide ceremony shot
-    gallery-05.jpg  → Couple laughing / candid
-    gallery-06.jpg  → Hands / ring detail
-    gallery-07.jpg  → Getting ready or behind-the-scenes
-    gallery-08.jpg  → Family or guests moment
-    gallery-09.jpg  → Romantic portrait
-    gallery-10.jpg  → Reception / venue detail
-    gallery-11.jpg  → Dance floor / celebration
-    gallery-12.jpg  → Final sunset or farewell shot
+interface Props {
+  // If passed from DB (via PremiumPageClient), uses these
+  images?: GalleryImage[];
+}
 
-  Recommended sizes:
-    Tall (portrait) images: 600×900px
-    Wide (landscape) images: 900×600px
-    Square: 600×600px
-  
-  All should be JPG, max 300KB each (compress with squoosh.app)
-  ───────────────────────────────────────────────────────────────────────
-  
-  PLACEHOLDER IMAGES BELOW use picsum.photos until you upload your own.
-  Each has a unique seed so they look different.
-*/
-
-const GALLERY_ITEMS = [
-  { src: "/images/premium/gallery/gallery-01.jpg", alt: "Couple portrait", span: "row-span-2" },
-  { src: "/images/premium/gallery/gallery-02.jpg", alt: "Ceremony arch", span: "" },
-  { src: "/images/premium/gallery/gallery-03.jpg", alt: "Ring detail", span: "" },
-  { src: "/images/premium/gallery/gallery-04.jpg", alt: "Wide ceremony", span: "" },
-  { src: "/images/premium/gallery/gallery-05.jpg", alt: "Couple laughing", span: "row-span-2" },
-  { src: "/images/premium/gallery/gallery-06.jpg", alt: "Hands detail", span: "" },
-  { src: "/images/premium/gallery/gallery-07.jpg", alt: "Getting ready", span: "" },
-  { src: "/images/premium/gallery/gallery-08.jpg", alt: "Family moment", span: "" },
-  { src: "/images/premium/gallery/gallery-09.jpg", alt: "Romantic portrait", span: "" },
+// Static fallback — used only when no DB images exist yet
+const STATIC_GALLERY = [
+  { url: "/images/premium/gallery/gallery-01.jpg", span: "row-span-2" },
+  { url: "/images/premium/gallery/gallery-02.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-03.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-04.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-05.jpg", span: "row-span-2" },
+  { url: "/images/premium/gallery/gallery-06.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-07.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-08.jpg", span: "" },
+  { url: "/images/premium/gallery/gallery-09.jpg", span: "" },
 ];
 
-// When you have real images, swap to local paths:
-// const GALLERY_ITEMS = [
-//   { src: "/images/premium/gallery/gallery-01.jpg", alt: "...", span: "row-span-2" },
-//   ...
-// ];
-
-export function PhotoGallery() {
+export function PhotoGallery({ images }: Props) {
   const [lightbox, setLightbox] = useState<string | null>(null);
+
+  // Use DB images if provided and non-empty, else static fallback
+  const items = images && images.length > 0
+    ? images.map((img, i) => ({
+        url:  img.url,
+        alt:  img.caption ?? `Gallery image ${i + 1}`,
+        span: i === 0 || i === 4 ? "row-span-2" : "",
+      }))
+    : STATIC_GALLERY.map((img, i) => ({
+        url:  img.url,
+        alt:  `Gallery image ${i + 1}`,
+        span: img.span,
+      }));
 
   return (
     <section id="gallery" className="bg-[#1c1713] px-6 py-[100px]">
@@ -76,16 +65,16 @@ export function PhotoGallery() {
           </div>
         </div>
 
-        {/* Masonry grid — CSS grid with row spans */}
+        {/* Masonry grid */}
         <div
           className="grid grid-cols-2 lg:grid-cols-3 gap-2"
           style={{ gridAutoRows: "220px" }}
         >
-          {GALLERY_ITEMS.map((item, i) => (
+          {items.map((item, i) => (
             <div
               key={i}
               className={`relative overflow-hidden cursor-pointer group ${item.span}`}
-              onClick={() => setLightbox(item.src)}
+              onClick={() => setLightbox(item.url)}
               style={{
                 animation: "fadeIn 0.6s ease forwards",
                 animationDelay: `${i * 0.06}s`,
@@ -93,19 +82,17 @@ export function PhotoGallery() {
               }}
             >
               <Image
-                src={item.src}
+                src={item.url}
                 alt={item.alt}
                 fill
                 className="object-cover object-center grayscale-[0.15] transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
                 sizes="(max-width: 768px) 50vw, 33vw"
               />
-              {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
             </div>
           ))}
         </div>
 
-        {/* Note about gallery */}
         <p className="text-center mt-8 text-[11px] text-[#a8795b]/50 italic tracking-[0.05em]">
           More moments will be added after the celebration ✦
         </p>

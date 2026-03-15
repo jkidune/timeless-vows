@@ -1,25 +1,24 @@
 "use client";
 
-/*
-  The reception venue address: 710 Garden Kasur (from Figma design overview)
-  Map: uses Google Maps embed iframe — no API key required for basic embed.
-  
-  OPTIONAL UPGRADE: Replace the iframe src with a real Google Maps Embed API
-  key for higher quality. Instructions:
-  1. Go to console.cloud.google.com → Enable Maps Embed API
-  2. Get API key
-  3. Replace EMBED_SRC below with:
-     https://www.google.com/maps/embed/v1/place?key=YOUR_KEY&q=St+Albans+Cathedral+Upanga+Dar+es+Salaam
-  
-  CURRENT: Uses standard embed (free, no key required, slight branding)
-*/
+interface Props {
+  venue?:        string;
+  venueAddress?: string;
+  mapsLink?:     string;
+  weddingDate?:  Date;
+}
 
-const MAPS_EMBED_SRC =
+const DEFAULT_EMBED =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.8327766!2d39.2742!3d-6.8120!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4bc47dd5b20d%3A0x4a5ad5fab93e3d5d!2sSt%20Albans%20Cathedral%20Church!5e0!3m2!1sen!2stz!4v1234567890";
 
-const GOOGLE_MAPS_LINK = "https://maps.app.goo.gl/KDCvwqvUS4ZWFD7w8";
+export function LocationSection({
+  venue        = "710 Garden Kasur",
+  venueAddress = "Dar es Salaam, Tanzania",
+  mapsLink     = "https://maps.app.goo.gl/KDCvwqvUS4ZWFD7w8",
+  weddingDate  = new Date("2026-05-02"),
+}: Props) {
+  const d = new Date(weddingDate);
+  const ceremonyTime = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: true });
 
-export function LocationSection() {
   return (
     <section
       id="location"
@@ -40,7 +39,7 @@ export function LocationSection() {
           </h2>
         </div>
 
-        {/* Two-column layout: address + map */}
+        {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-16 items-center">
 
           {/* Left: address details */}
@@ -55,11 +54,10 @@ export function LocationSection() {
                 className="text-[clamp(20px,3vw,32px)] italic text-[#482612] leading-tight"
                 style={{ fontFamily: "'Cormorant Garamond', serif" }}
               >
-                710 Garden Kasur
+                {venue}
               </p>
               <p className="text-[15px] leading-[1.8] text-[#b9927a] mt-2 uppercase tracking-[0.05em]">
-                Dar es Salaam<br />
-                Tanzania
+                {venueAddress}
               </p>
             </div>
 
@@ -70,12 +68,11 @@ export function LocationSection() {
               <div className="h-px w-8 bg-[#c9a97e]/50" />
             </div>
 
-            {/* Event details summary */}
+            {/* Event details */}
             <div className="flex flex-col gap-4">
               {[
-                { label: "Ceremony", value: "12:00 PM", note: "St. Albans Cathedral" },
-                { label: "Reception", value: "5:00 PM", note: "Garden Venue" },
-                { label: "Dress Code", value: "Formal", note: "See dress code section ↓" },
+                { label: "Ceremony",   value: ceremonyTime, note: venue },
+                { label: "Dress Code", value: "Formal",     note: "See dress code section ↓" },
               ].map(({ label, value, note }) => (
                 <div key={label} className="flex justify-between items-end border-b border-[#c9a97e]/20 pb-3">
                   <span className="text-[11px] uppercase tracking-[0.2em] text-[#9d7760]">{label}</span>
@@ -88,26 +85,28 @@ export function LocationSection() {
             </div>
 
             {/* Direction button */}
-            <a
-              href={GOOGLE_MAPS_LINK}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-3 self-start border border-[#a8795b] text-[#a8795b] text-[11px] tracking-[0.2em] uppercase px-8 py-3 hover:bg-[#a8795b] hover:text-white transition-all duration-300 group"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              Open in Google Maps
-            </a>
+            {mapsLink && (
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 self-start border border-[#a8795b] text-[#a8795b] text-[11px] tracking-[0.2em] uppercase px-8 py-3 hover:bg-[#a8795b] hover:text-white transition-all duration-300 group"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Open in Google Maps
+              </a>
+            )}
           </div>
 
-          {/* Right: interactive map embed */}
+          {/* Right: map embed */}
           <div className="relative">
             <div className="overflow-hidden border border-[#c9a97e]/30 shadow-[0_8px_40px_rgba(168,121,91,0.12)]">
               <iframe
                 title="Wedding venue location"
-                src={MAPS_EMBED_SRC}
+                src={DEFAULT_EMBED}
                 width="100%"
                 height="440"
                 style={{ border: 0 }}
@@ -117,10 +116,9 @@ export function LocationSection() {
                 className="block w-full h-[380px] lg:h-[440px]"
               />
             </div>
-            {/* Map label badge */}
             <div className="absolute -bottom-4 -left-4 bg-[#f7f3ee] border border-[#c9a97e]/30 px-4 py-2 shadow-sm">
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#9d7760]">
-                St. Albans Cathedral · Dar es Salaam
+                {venue}
               </p>
             </div>
           </div>

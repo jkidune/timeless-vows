@@ -1,16 +1,33 @@
-// ─────────────────────────────────────────────────────────────────────
-// FILE PATH: app/components/premium/PremiumHero.tsx
-// ─────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useEffect, useState } from "react";
 
 interface Props {
   visible: boolean;
+  partner1?:     string;
+  partner2?:     string;
+  weddingDate?:  Date;
+  heroImageUrl?: string;
+  inviteText?:   string;
 }
 
-export function PremiumHero({ visible }: Props) {
+export function PremiumHero({
+  visible,
+  partner1     = "Barke",
+  partner2     = "William",
+  weddingDate  = new Date("2026-05-02"),
+  heroImageUrl,
+  inviteText   = "We would like to invite you to celebrate with us the most special day of our lives. It would be an honor to have you present at this important moment.",
+}: Props) {
   const [animate, setAnimate] = useState(false);
+
+  // Format: "02 • MAY • 2026"
+  const d = new Date(weddingDate);
+  const formattedDate = [
+    String(d.getDate()).padStart(2, "0"),
+    d.toLocaleString("en-GB", { month: "short" }).toUpperCase(),
+    d.getFullYear(),
+  ].join(" • ");
 
   useEffect(() => {
     if (visible) {
@@ -44,9 +61,8 @@ export function PremiumHero({ visible }: Props) {
         <div className="absolute inset-0">
           <div
             className="h-full w-full bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/premium/hero-bg.jpg')" }}
+            style={{ backgroundImage: `url('${heroImageUrl ?? "/images/premium/hero-bg.jpg"}')` }}
           />
-          {/* Cinematic gradient */}
           <div
             className="absolute inset-0"
             style={{
@@ -54,21 +70,17 @@ export function PremiumHero({ visible }: Props) {
               mixBlendMode: "multiply",
             }}
           />
-          {/* Bottom vignette */}
           <div
             className="absolute inset-0"
             style={{ background: "linear-gradient(to top,rgba(20,15,10,0.28) 0%,transparent 50%)" }}
           />
         </div>
 
-        {/* Content — three rows: top spacer, center text, bottom scroll */}
         <div className="relative z-10 w-full max-w-[1280px] px-6 flex flex-col items-center"
           style={{ minHeight: "100svh" }}>
 
-          {/* Flex spacer top */}
           <div className="flex-1" />
 
-          {/* CENTER TEXT BLOCK */}
           <div className="flex flex-col items-center gap-5 text-center">
 
             {/* Date */}
@@ -80,10 +92,10 @@ export function PremiumHero({ visible }: Props) {
                 transition: "opacity 1s ease, transform 1s ease",
               }}
             >
-              02 • MAY • 2026
+              {formattedDate}
             </p>
 
-            {/* Names — Kapakana */}
+            {/* Names */}
             <h1
               className="text-[clamp(56px,12.5vw,190px)] text-[#f7f3ee] leading-[0.92] tracking-[-0.01em]"
               style={{
@@ -95,7 +107,7 @@ export function PremiumHero({ visible }: Props) {
                 transitionDelay: "0.15s",
               }}
             >
-              Barke & William
+              {partner1} & {partner2}
             </h1>
 
             {/* Gold ornament */}
@@ -114,7 +126,7 @@ export function PremiumHero({ visible }: Props) {
               <div className="h-px w-12" style={{ background: "linear-gradient(to left,transparent,rgba(201,169,126,0.7))" }} />
             </div>
 
-            {/* Invitation text */}
+            {/* Invite text */}
             <p
               className="max-w-[680px] text-[clamp(15px,1.8vw,22px)] italic leading-[1.6] text-white"
               style={{
@@ -125,16 +137,12 @@ export function PremiumHero({ visible }: Props) {
                 transitionDelay: "0.4s",
               }}
             >
-              We would like to invite you to celebrate with us the most special
-              day of our lives. It would be an honor to have you present at this
-              important moment.
+              {inviteText}
             </p>
           </div>
 
-          {/* Generous spacer between text and scroll indicator */}
           <div className="flex-1" style={{ minHeight: "clamp(60px,8vh,120px)" }} />
 
-          {/* SCROLL DOWN — clickable, at bottom */}
           <button
             onClick={scrollToStory}
             className="flex flex-col items-center gap-3 mb-10 group"

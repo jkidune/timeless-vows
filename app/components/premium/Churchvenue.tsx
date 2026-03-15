@@ -2,22 +2,35 @@
 
 import Image from "next/image";
 
-/*
-  IMAGES NEEDED:
-  - /public/images/premium/church.jpg
-    → The watercolor/illustrated image of St. Albans Cathedral from the Figma file
-    → Size: 815×388px landscape
-    → This is the AI-generated illustration of the church
+interface Props {
+  venue?:          string;
+  venueAddress?:   string;
+  churchImageUrl?: string;
+  mapsLink?:       string;
+  partner1?:       string;
+  partner2?:       string;
+  weddingDate?:    Date;
+}
 
-  - /public/illustrations/premium/botanical-left.svg
-    → Large botanical/floral illustration for top-left corner decoration
-    → Place at opacity 0.08 — from Figma design tokens
+export function ChurchVenue({
+  venue          = "St. Albans Cathedral Church",
+  venueAddress   = "Upanga 0124, Dar es Salaam, Tanzania",
+  churchImageUrl,
+  mapsLink       = "https://maps.app.goo.gl/KDCvwqvUS4ZWFD7w8",
+  partner1       = "Barke",
+  partner2       = "William",
+  weddingDate    = new Date("2026-05-02"),
+}: Props) {
+  // Build dynamic .ics calendar link
+  const d       = new Date(weddingDate);
+  const dtStart = d.toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const dtEnd   = new Date(d.getTime() + 4 * 3600000).toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const calHref = `data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:${dtStart}%0ADTEND:${dtEnd}%0ASUMMARY:${encodeURIComponent(partner1 + " & " + partner2 + " Wedding")}%0ALOCATION:${encodeURIComponent(venue)}%0AEND:VEVENT%0AEND:VCALENDAR`;
+  const calFile = `${partner1.toLowerCase()}-${partner2.toLowerCase()}-wedding.ics`;
 
-  - /public/illustrations/premium/botanical-right.svg
-    → Mirror of botanical-left for top-right corner
-*/
+  // Split address for multi-line display
+  const addressLines = venueAddress.split(",").map((l) => l.trim());
 
-export function ChurchVenue() {
   return (
     <section
       id="church"
@@ -41,35 +54,32 @@ export function ChurchVenue() {
         />
       </div>
 
-      {/* Content */}
       <div className="relative mx-auto flex max-w-[1280px] flex-col items-center">
         <div className="flex flex-col items-center gap-[30px] text-center">
 
-          {/* Label */}
           <p className="text-[13px] font-medium uppercase tracking-[0.15em] text-[#9d7760]">
             The Holy Mass will be at
           </p>
 
-          {/* Church illustration */}
+          {/* Church image — DB url or static fallback */}
           <div className="relative w-full max-w-[815px] h-[280px] md:h-[388px] overflow-hidden">
             <Image
-              src="/images/premium/church.jpg"
-              alt="Illustration of St. Albans Cathedral Church"
+              src={churchImageUrl ?? "/images/premium/church.jpg"}
+              alt={`Illustration of ${venue}`}
               fill
               className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 815px"
             />
           </div>
 
-          {/* Church name */}
+          {/* Venue name */}
           <h2
             className="text-[clamp(28px,4vw,48px)] italic leading-tight tracking-[0.01em] text-[#482612]"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            St. Albans Cathedral Church
+            {venue}
           </h2>
 
-          {/* Ornament divider */}
           <div className="flex items-center gap-4">
             <div className="h-px w-12 bg-[#c9a97e]/50" />
             <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a97e]" />
@@ -77,26 +87,27 @@ export function ChurchVenue() {
           </div>
 
           {/* Address */}
-          <div
-            className="text-[clamp(15px,1.5vw,20px)] leading-[1.6] tracking-[0.05em] text-[#b9927a]"
-          >
-            <p className="uppercase font-medium">Upanga 0124</p>
-            <p className="uppercase font-medium">Dar es Salaam, Tanzania</p>
+          <div className="text-[clamp(15px,1.5vw,20px)] leading-[1.6] tracking-[0.05em] text-[#b9927a]">
+            {addressLines.map((line, i) => (
+              <p key={i} className="uppercase font-medium">{line}</p>
+            ))}
           </div>
 
-          {/* Add to calendar / directions */}
+          {/* Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+            {mapsLink && (
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-[#a8795b] text-[#a8795b] text-[11px] tracking-[0.2em] uppercase px-8 py-3 hover:bg-[#a8795b] hover:text-white transition-all duration-300"
+              >
+                Get Directions
+              </a>
+            )}
             <a
-              href="https://maps.app.goo.gl/KDCvwqvUS4ZWFD7w8"
-              target="_blank"
-              rel="noreferrer"
-              className="border border-[#a8795b] text-[#a8795b] text-[11px] tracking-[0.2em] uppercase px-8 py-3 hover:bg-[#a8795b] hover:text-white transition-all duration-300"
-            >
-              Get Directions
-            </a>
-            <a
-              href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:20260502T090000Z%0ADTEND:20260502T130000Z%0ASUMMARY:Barke & William Wedding%0ALOCATION:St. Albans Cathedral Church, Upanga, Dar es Salaam%0AEND:VEVENT%0AEND:VCALENDAR"
-              download="barke-william-wedding.ics"
+              href={calHref}
+              download={calFile}
               className="border border-[#482612]/20 text-[#482612]/60 text-[11px] tracking-[0.2em] uppercase px-8 py-3 hover:border-[#482612]/50 hover:text-[#482612] transition-all duration-300"
             >
               Add to Calendar

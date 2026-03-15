@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────
-// FILE PATH: app/components/premium/OpeningSequence.tsx
-// ─────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -8,14 +5,32 @@ import { useState, useRef, useEffect } from "react";
 type Phase = "gate" | "fading" | "done";
 
 interface Props {
-  onComplete: () => void;
+  onComplete:    () => void;
+  coupleNames?:  string;   // e.g. "Barke & William"
+  weddingDate?:  Date;
+  location?:     string;   // e.g. "Dar es Salaam, Tanzania"
+  videoUrl?:     string;   // Cloudinary or local path
 }
 
-export function OpeningSequence({ onComplete }: Props) {
-  const [phase, setPhase]           = useState<Phase>("gate");
-  const [mounted, setMounted]       = useState(false);
+export function OpeningSequence({
+  onComplete,
+  coupleNames  = "Barke & William",
+  weddingDate  = new Date("2026-05-02"),
+  location     = "Dar es Salaam, Tanzania",
+  videoUrl     = "/videos/premium/opening.mp4",
+}: Props) {
+  const [phase,      setPhase]      = useState<Phase>("gate");
+  const [mounted,    setMounted]    = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Format: "02 · May · 2026"
+  const d = new Date(weddingDate);
+  const dateLabel = [
+    String(d.getDate()).padStart(2, "0"),
+    d.toLocaleString("en-GB", { month: "long" }),
+    d.getFullYear(),
+  ].join(" · ");
 
   useEffect(() => {
     setMounted(true);
@@ -25,13 +40,9 @@ export function OpeningSequence({ onComplete }: Props) {
       return;
     }
 
-    // Force-attempt video play after a short delay
-    // This handles browsers that need a nudge
     const t = setTimeout(() => {
       if (videoRef.current) {
-        videoRef.current.play().catch(() => {
-          // Play failed silently — fallback bg already showing
-        });
+        videoRef.current.play().catch(() => {});
       }
     }, 300);
 
@@ -86,13 +97,13 @@ export function OpeningSequence({ onComplete }: Props) {
         className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden"
         style={{ pointerEvents: phase === "fading" ? "none" : "auto" }}
       >
-        {/* ── Fallback gradient background — always visible until video loads ── */}
+        {/* Fallback gradient — always visible until video loads */}
         <div
           className="tv-shimmer-bg absolute inset-0 transition-opacity duration-1000"
           style={{ opacity: videoReady ? 0 : 1 }}
         />
 
-        {/* ── Grain texture overlay on fallback ── */}
+        {/* Grain texture */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -101,7 +112,7 @@ export function OpeningSequence({ onComplete }: Props) {
           }}
         />
 
-        {/* ── Video — fades in once loaded, fades out on exit ── */}
+        {/* Video */}
         <video
           ref={videoRef}
           autoPlay
@@ -115,24 +126,12 @@ export function OpeningSequence({ onComplete }: Props) {
             transition: "opacity 1.5s ease-in-out",
           }}
           onCanPlay={() => setVideoReady(true)}
-          onError={() => setVideoReady(false)} // stay on gradient if video errors
+          onError={() => setVideoReady(false)}
         >
-          {/*
-            VIDEO FILE: /public/videos/premium/opening.mp4
-            ─────────────────────────────────────────────
-            IMPORTANT FOR VERCEL:
-            Keep file under 50MB. If larger, host on Cloudinary or Mux
-            and replace the src with the external URL.
-            
-            Cloudinary free tier: cloudinary.com
-            → Upload video → copy the delivery URL
-            → Replace src="/videos/premium/opening.mp4"
-               with   src="https://res.cloudinary.com/YOUR_CLOUD/video/upload/opening.mp4"
-          */}
-          <source src="/videos/premium/opening.mp4" type="video/mp4" />
+          <source src={videoUrl} type="video/mp4" />
         </video>
 
-        {/* ── Dark cinematic overlay on top of video ── */}
+        {/* Dark overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -142,7 +141,7 @@ export function OpeningSequence({ onComplete }: Props) {
           }}
         />
 
-        {/* ── Parchment white fade-out ── */}
+        {/* Parchment fade-out */}
         <div
           className="absolute inset-0 bg-[#f7f3ee] pointer-events-none"
           style={{
@@ -151,7 +150,7 @@ export function OpeningSequence({ onComplete }: Props) {
           }}
         />
 
-        {/* ── Gate content ── */}
+        {/* Gate content */}
         <div
           className="relative z-10 flex flex-col items-center gap-5 text-center px-6 w-full max-w-[900px]"
           style={{
@@ -163,10 +162,12 @@ export function OpeningSequence({ onComplete }: Props) {
             A Wedding Invitation
           </p>
 
+          {/* Date — from prop */}
           <p className="tv-a2 text-[12px] tracking-[0.25em] uppercase text-white/65">
-            02 · May · 2026
+            {dateLabel}
           </p>
 
+          {/* Couple names — from prop */}
           <h1
             className="tv-a3 text-[clamp(52px,10vw,130px)] text-white leading-none"
             style={{
@@ -174,7 +175,7 @@ export function OpeningSequence({ onComplete }: Props) {
               fontWeight: 400,
             }}
           >
-            Barke & William
+            {coupleNames}
           </h1>
 
           {/* Gold ornament */}
@@ -193,8 +194,9 @@ export function OpeningSequence({ onComplete }: Props) {
             Enter
           </button>
 
+          {/* Location — from prop */}
           <p className="tv-a6 text-[9px] tracking-[0.2em] uppercase text-white/25">
-            Dar es Salaam, Tanzania
+            {location}
           </p>
         </div>
       </div>

@@ -5,15 +5,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const redirectTo   = searchParams.get("redirectTo") || "/dashboard";
+  const callbackErr  = searchParams.get("error");
 
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
-  const [error,    setError]    = useState("");
+  const [error,    setError]    = useState(
+    callbackErr === "callback_failed" ? "Authentication failed. Please try again." : ""
+  );
   const [loading,  setLoading]  = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,8 +43,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f3ee] flex items-center justify-center px-4">
-
-      {/* Background texture */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.03]"
         style={{
@@ -52,16 +54,12 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-[420px]">
 
-        {/* Logo / brand */}
+        {/* Brand */}
         <div className="text-center mb-10">
           <Link href="/">
             <p
               className="text-[clamp(28px,5vw,40px)] text-[#482612]"
-              style={{
-                fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)",
-                fontStyle: "italic",
-                fontWeight: 400,
-              }}
+              style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic", fontWeight: 400 }}
             >
               Timeless Vows
             </p>
@@ -80,13 +78,8 @@ export default function LoginPage() {
         <div className="relative bg-white border border-[#c9a97e]/25 p-8 shadow-[0_8px_40px_rgba(168,121,91,0.08)]">
           <div className="absolute inset-[6px] border border-[#c9a97e]/10 pointer-events-none" />
 
-          <h1 className="text-[22px] font-semibold text-[#482612] mb-1">
-            Welcome back
-          </h1>
-          <p
-            className="text-[14px] italic text-[#b9927a] mb-7"
-            style={{ fontFamily: "'Cormorant Garamond',serif" }}
-          >
+          <h1 className="text-[22px] font-semibold text-[#482612] mb-1">Welcome back</h1>
+          <p className="text-[14px] italic text-[#b9927a] mb-7" style={{ fontFamily: "'Cormorant Garamond',serif" }}>
             Sign in to your account
           </p>
 
@@ -104,6 +97,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
+                autoComplete="email"
                 className={inputClass}
                 placeholder="you@example.com"
                 value={email}
@@ -112,42 +106,37 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold">
-                  Password
-                </label>
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-[10px] text-[#a8795b]/60 hover:text-[#a8795b] transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <label className="block text-[10px] uppercase tracking-[0.2em] text-[#a8795b] font-semibold mb-2">
+                Password
+              </label>
               <input
                 type="password"
                 required
+                autoComplete="current-password"
                 className={inputClass}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {/* Password reset lives in /dashboard/settings once logged in */}
+              <p className="text-[10px] italic text-[#b9927a]/60 mt-1.5">
+                Forgot your password? Sign in and visit{" "}
+                <span className="text-[#a8795b]">Settings → Reset Password</span>
+              </p>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#a8795b] text-white text-[11px] uppercase tracking-[0.25em] py-4 font-semibold hover:bg-[#482612] disabled:bg-[#c9a97e]/60 disabled:cursor-not-allowed transition-colors duration-300 mt-2"
+              className="w-full bg-[#a8795b] text-white text-[11px] uppercase tracking-[0.25em] py-4 font-semibold hover:bg-[#482612] disabled:bg-[#c9a97e]/60 disabled:cursor-not-allowed transition-colors duration-300 mt-2 flex items-center justify-center gap-2"
             >
-              {loading ? "Signing in…" : "Sign In"}
+              {loading ? <><Loader2 size={13} className="animate-spin" /> Signing in…</> : "Sign In"}
             </button>
           </form>
 
           <p className="text-center text-[12px] text-[#b9927a] mt-6">
             Don&apos;t have an account?{" "}
-            <Link
-              href="/auth/signup"
-              className="text-[#a8795b] font-medium hover:text-[#482612] transition-colors"
-            >
+            <Link href="/auth/signup" className="text-[#a8795b] font-medium hover:text-[#482612] transition-colors">
               Sign up
             </Link>
           </p>

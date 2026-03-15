@@ -3,15 +3,37 @@
 import Image from "next/image";
 import { useScrollReveal } from "@/app/hooks/useScrollReveal";
 
-export function OurStory() {
-  const { ref: imgRef, visible: imgVisible } = useScrollReveal();
+interface Props {
+  partner1?:       string;
+  partner2?:       string;
+  storyText?:      string;
+  coupleImageUrl?: string;
+}
+
+export function OurStory({
+  partner1      = "Barke",
+  partner2      = "William",
+  storyText,
+  coupleImageUrl,
+}: Props) {
+  const { ref: imgRef,  visible: imgVisible  } = useScrollReveal();
   const { ref: textRef, visible: textVisible } = useScrollReveal();
+
+  // Split DB story text into paragraphs, or use a default
+  const paragraphs = storyText
+    ? storyText.split(/\n\n+/).filter(Boolean)
+    : [
+        `${partner2} & ${partner1} are tying the knot!`,
+        `By God's grace and through His perfect plan, two hearts have become one.`,
+        `"You are the love I prayed for, the answer I never expected, and the blessing I will never take for granted."`,
+        `Please join us as we say our vows and begin forever.`,
+        `Sincerely,\n${partner2} & ${partner1}.`,
+      ];
 
   return (
     <section id="our-story" className="bg-[#f7f3ee] px-6 py-[100px] overflow-hidden">
       <div className="mx-auto max-w-[1280px]">
 
-        {/* Section label */}
         <div className="flex items-center gap-3 mb-12">
           <div className="h-px w-8 bg-[#a8795b]/60" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#a8795b]">
@@ -31,24 +53,14 @@ export function OurStory() {
               transition: "opacity 1s ease, transform 1s ease",
             }}
           >
-            {/*
-              PLACE IMAGE AT: /public/images/premium/couple-hands.jpg
-              Use the close-up of couple holding hands from the Figma design
-              Size: 490×631px portrait
-            */}
             <Image
-              src="/images/premium/couple-hands.jpg"
-              alt="Barke and William holding hands"
+              src={coupleImageUrl ?? "/images/premium/couple-hands.jpg"}
+              alt={`${partner1} and ${partner2} holding hands`}
               fill
               className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 490px"
             />
 
-            {/* Subtle botanical overlay — low opacity */}
-            {/*
-              PLACE SVG AT: /public/illustrations/premium/flowers-corner.svg
-              This is the floral vector illustration from Figma (opacity 0.23)
-            */}
             <div
               className="absolute -right-8 -bottom-8 pointer-events-none"
               style={{ opacity: 0.18 }}
@@ -74,7 +86,6 @@ export function OurStory() {
               transitionDelay: "0.15s",
             }}
           >
-            {/* Soft radial glow behind text */}
             <div
               className="pointer-events-none absolute left-[-120px] top-[140px] h-[438px] w-[431px] opacity-30"
               aria-hidden="true"
@@ -98,7 +109,7 @@ export function OurStory() {
               and happily ever after
             </h2>
 
-            {/* Story body */}
+            {/* Story body — from DB or default */}
             <div
               className="relative z-10 w-full max-w-[513px] text-left"
               style={{
@@ -110,22 +121,11 @@ export function OurStory() {
                 color: "#a8795b",
               }}
             >
-              <p>William &amp; Barke are tying the knot!</p>
-              <p className="mt-4">
-                By God&apos;s grace and through His perfect plan, two hearts have
-                become one.
-              </p>
-              <p className="mt-4 pl-4 border-l-2 border-[#c9a97e]/40 text-[#9d7760]">
-                &ldquo;You are the love I prayed for, the answer I never expected,
-                and the blessing I will never take for granted.&rdquo;
-              </p>
-              <p className="mt-4">
-                Please join us as we say our vows and begin forever.
-              </p>
-              <p className="mt-6 text-[#4e2d28] not-italic font-medium tracking-[0.05em]">
-                Sincerely,<br />
-                William &amp; Barke.
-              </p>
+              {paragraphs.map((para, i) => (
+                <p key={i} className={i > 0 ? "mt-4" : ""}>
+                  {para}
+                </p>
+              ))}
             </div>
           </div>
         </div>
