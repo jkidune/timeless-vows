@@ -32,6 +32,16 @@ export function PremiumNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const scrollToHash = (hash: string) => {
+    const id = hash.replace("#", "");
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const navbarOffset = 88;
+    const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navbarOffset);
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   const linkClass = `text-[12px] font-semibold tracking-[0.18em] uppercase transition-colors duration-300 ${
     scrolled ? "text-[#482612] hover:text-[#a8795b]" : "text-white hover:text-white/65"
   }`;
@@ -58,7 +68,17 @@ export function PremiumNavbar() {
           {/* Left links */}
           <div className="hidden lg:flex items-center gap-8">
             {NAV_LEFT.map(({ label, href }) => (
-              <a key={label} href={href} className={linkClass}>{label}</a>
+              <a
+                key={label}
+                href={href}
+                className={linkClass}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToHash(href);
+                }}
+              >
+                {label}
+              </a>
             ))}
           </div>
 
@@ -90,7 +110,17 @@ export function PremiumNavbar() {
               isPage ? (
                 <Link key={label} href={href} className={linkClass}>{label}</Link>
               ) : (
-                <a key={label} href={href} className={linkClass}>{label}</a>
+                <a
+                  key={label}
+                  href={href}
+                  className={linkClass}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToHash(href);
+                  }}
+                >
+                  {label}
+                </a>
               )
             )}
           </div>
@@ -164,7 +194,11 @@ export function PremiumNavbar() {
                   <a
                     key={label}
                     href={href}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMenuOpen(false);
+                      scrollToHash(href);
+                    }}
                     className="text-[28px] text-[#f7f3ee] hover:text-[#c9a97e] transition-colors duration-500 tracking-[0.02em]"
                     style={{ fontFamily: "var(--font-kapakana,'Cormorant Garamond',serif)", fontStyle: "italic" }}
                   >

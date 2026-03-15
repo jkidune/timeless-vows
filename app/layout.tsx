@@ -4,6 +4,7 @@ import "./globals.css";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import localFont from "next/font/local";
 import { ConditionalNavbar } from "./components/Conditionalnavbar";
+import PageTransition from "./components/PageTransition";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -58,7 +59,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${inter.variable} ${cormorant.variable} ${jost.variable} ${kapakana.variable} antialiased font-sans`}
       >
         <ConditionalNavbar />
-        {children}
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   );
